@@ -2,6 +2,9 @@ import { render } from 'preact';
 import { route } from './router';
 import { useSignal } from './signal';
 import './styles/base.css';
+import { SvgDefs } from './components/Icons';
+import { Toasts } from './components/misc';
+import Kit from './pages/Kit';
 
 const TITLES: Record<string, string> = {
   home: 'Home',
@@ -18,6 +21,7 @@ const TITLES: Record<string, string> = {
 
 function App() {
   const r = useSignal(route);
+  if (r.name === 'kit') return (<><SvgDefs /><Kit /><Toasts /></>);
   return (
     <main id="main">
       <h1>{TITLES[r.name]}</h1>

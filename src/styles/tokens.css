@@ -1,0 +1,52 @@
+:root {
+  --carbon-navy: #11172a;
+  --carbon-deep: #0a0e1a;
+  --carbon-line: #2a3352;
+  --form-white: #f3efe4;
+  --form-yellow: #ebcb55;
+  --form-pink: #e9afc0;
+  --stamp-red: #d4262e;
+  --ledger-green: #2f8f5b;
+  --watch-amber: #d98b2b;
+  --slate-grey: #8a93a8;
+  --ink: #1a1a1a;
+  --brass: #b8935a;
+  --brass-hi: #e2c38a;
+  /* on-paper variants (pass AA on --form-white) */
+  --red-on-paper: #b01e25;
+  --green-on-paper: #23704a;
+  --amber-on-paper: #8f5611;
+  --grey-on-paper: #565e72;
+
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 24px; --s-6: 32px;
+  --s-7: 48px; --s-8: 64px; --s-9: 96px; --s-10: 128px;
+  --section-pad-y: clamp(72px, 12vw, 160px);
+  --gutter: clamp(16px, 4vw, 48px);
+  --maxw: 1320px;
+  --maxw-text: 64ch;
+
+  --r-paper: 2px; --r-btn: 4px; --r-chip: 999px; --r-card: 6px;
+
+  --sh-paper: 0 1px 0 rgba(0,0,0,.25), 0 8px 24px -8px rgba(0,0,0,.55);
+  --sh-lift: 0 2px 0 rgba(0,0,0,.25), 0 22px 40px -12px rgba(0,0,0,.65);
+  --sh-stamp: inset 0 0 0 3px currentColor, inset 0 0 0 6px transparent, inset 0 0 0 8px currentColor;
+  --sh-lamp: 0 0 120px 40px rgba(226,195,138,.12);
+
+  --z-base: 1; --z-sticky: 50; --z-nav: 100; --z-drawer: 200; --z-modal: 300; --z-toast: 400; --z-intro: 500;
+
+  --ease-paper: cubic-bezier(.22,1,.36,1);
+  --ease-stamp: cubic-bezier(.6,-0.28,.74,.05);
+  --ease-swing: cubic-bezier(.34,1.56,.64,1);
+  --d-xs: 120ms; --d-s: 200ms; --d-m: 360ms; --d-l: 600ms; --d-xl: 900ms;
+
+  --font-display: 'Archivo Black', 'Archivo Variable', Impact, sans-serif;
+  --font-head: 'Archivo Variable', 'Archivo', system-ui, sans-serif;
+  --font-body: 'Courier Prime', 'Courier New', monospace;
+  --font-data: 'IBM Plex Mono', ui-monospace, monospace;
+  --font-sign: 'Homemade Apple', 'Caveat', cursive;
+
+  --paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --d-xs: 0ms; --d-s: 0ms; --d-m: 0ms; --d-l: 0ms; --d-xl: 0ms; }
+}
