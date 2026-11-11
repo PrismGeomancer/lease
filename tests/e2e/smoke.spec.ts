@@ -45,15 +45,17 @@ test('home: empty states are honest (no fake activity)', async ({ page }) => {
   await expect(page.getByText('Office open. Filing cabinet empty. Be the first tenant.')).toBeVisible();
   await expect(page.getByText('Office quiet. No leases on file yet.')).toBeVisible();
   await expect(page.getByText('PENDING — NOT YET LISTED')).toBeVisible();
-  await expect(page.getByText('SAMPLE — FICTIONAL COIN').first()).toBeVisible();
+  await expect(page.getByText('SAMPLE — FICTIONAL COIN')).toHaveCount(0);
+  await expect(page.getByText('$DRAFTY').first()).toBeVisible();
   // empty config => no dead links to X / Telegram / market
   await expect(page.locator('a[href="#"]')).toHaveCount(0);
   await expect(page.getByText('View market')).toHaveCount(0);
 });
 
-test('register: samples never appear as real leases', async ({ page }) => {
+test('register: placeholder cards are not links and have no label', async ({ page }) => {
   await page.goto('/#/register');
-  await expect(page.getByText('No leases on file yet. These are samples:')).toBeVisible();
+  await expect(page.getByText('$DRAFTY')).toBeVisible();
+  await expect(page.getByText(/sample/i)).toHaveCount(0);
   await expect(page.locator('a.icard')).toHaveCount(0);
 });
 

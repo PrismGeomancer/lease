@@ -115,7 +115,6 @@ function Floor({ reg, office }: { reg: Register | null; office: Office | null })
         <Button variant="secondary" href="#/register">{copy.register.cta}</Button>
       </div>
       <p>{copy.register.lede} {office && office.counts.onFile > 0 && <span class="mono">{copy.hero.facts(office.counts.onFile, office.counts.renewed, office.counts.evicted).join(', ')}.</span>}</p>
-      {real.length === 0 && <p class="mono">{copy.register.empty}</p>}
       <div class="drawer-cards">
         {(real.length ? real : SAMPLES).map((e) => <IndexCard key={e.fp} entry={e} />)}
       </div>

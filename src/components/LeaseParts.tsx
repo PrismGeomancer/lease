@@ -5,7 +5,6 @@ import { Stamp } from './Stamp';
 import { PunchCard } from './PunchCard';
 import { TokenImage } from './InspectionParts';
 import { clean, fmtDate, shorten } from '../lib/util';
-import { copy } from '../copy';
 import type { RegisterEntry, RoundRecord } from '../lib/dataTypes';
 import type { Status } from '../status';
 import type { FindingStatus } from '../types';
@@ -43,7 +42,7 @@ export function IndexCard({ entry }: { entry: RegisterEntry }) {
         <TokenImage src={entry.image} size={36} />
         <div>
           <strong class="icard__ticker">{clean(entry.ticker ?? shorten(entry.mint), 12)}</strong>
-          <div class="mono icard__sub">{entry.sample ? 'sample' : shorten(entry.mint)}</div>
+          <div class="mono icard__sub">{entry.sample ? '' : shorten(entry.mint)}</div>
         </div>
       </div>
       <PunchCard days={entry.term} elapsed={entry.state === 'RENEWED' ? entry.term : elapsed} compact />
@@ -51,11 +50,10 @@ export function IndexCard({ entry }: { entry: RegisterEntry }) {
         <span class="mono">{entry.term}-day term</span>
         <Stamp status={stateStatus} size="sm" />
       </div>
-      {entry.sample && <Stamp status="SAMPLE" size="sm" diagonal text={copy.register.sample} />}
     </>
   );
   return entry.sample ? (
-    <article class="icard paper" aria-label={`Sample lease ${entry.ticker}`}>{inner}</article>
+    <article class="icard paper" aria-label={`Lease ${entry.ticker}`}>{inner}</article>
   ) : (
     <a class="icard paper" href={`#/l/${encodeURIComponent(entry.fp)}`} data-fp={entry.fp}>{inner}</a>
   );
