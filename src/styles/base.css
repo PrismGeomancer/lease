@@ -1,0 +1,2 @@
+:root { --carbon-navy: #11172a; --form-white: #f3efe4; }
+body { margin: 0; background: var(--carbon-navy); color: var(--form-white); font-family: 'Courier Prime', monospace; }
