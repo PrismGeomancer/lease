@@ -16,6 +16,8 @@ describe('router', () => {
     expect(parseHash('#/hearing/fp/ns').params.clause).toBe('ns');
     expect(parseHash('#/keyring').name).toBe('keyring');
     expect(parseHash('#/office').name).toBe('office');
+    expect(parseHash('#/office#faq-3').name).toBe('office');
+    expect(parseHash('#/register?dev=x').name).toBe('register');
     expect(parseHash('#/nope').name).toBe('notfound');
   });
 });

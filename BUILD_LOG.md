@@ -20,3 +20,7 @@ Done: RPC wrapper (fallback, backoff 200/400 ms, 60 s cache), DexScreener client
 Live (this environment): public RPC `getAccountInfo`, DexScreener and Helius-less paths respond. Public RPC returns HTTP 429 for `getTokenLargestAccounts` (landlord/neighbours → UNVERIFIABLE) — a Helius key is needed for those.
 Fixtures: synthetic (shapes mirror real responses), defined inline in tests; not captured from live responses because the public RPC rate-limits the holder calls.
 Known gaps: LP rule for PumpSwap/Raydium is UNVERIFIABLE by design (no verified protocol-level burn guarantee).
+
+## Stage 5-6 — Home and pages
+Done: app shell (nav, drawer, footer, banners, error boundary), all 12 home sections with real copy, Inspect/Draft/Lease/Register/Hearing/Keyring/Office/404, wallet modal (Wallet Standard), record-on-chain flow, register reader, hearing evidence. e2e: every route renders, 320px has no horizontal overflow, empty states are honest.
+Missing/unverified: signing with a real wallet, recording on devnet (needs a funded devnet wallet and OFFICE_ADDRESS) — not testable from this environment.

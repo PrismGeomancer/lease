@@ -6,7 +6,7 @@ export interface Route {
 }
 
 export function parseHash(hash: string): Route {
-  const path = hash.replace(/^#/, '').split('?')[0] ?? '';
+  const path = hash.replace(/^#/, '').split(/[?#]/)[0] ?? '';
   const seg = path.split('/').filter(Boolean).map(decodeURIComponent);
   const [a, b, c] = seg;
   if (seg.length === 0) return { name: 'home', params: {} };
