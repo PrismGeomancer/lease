@@ -1,0 +1,55 @@
+name: Office rounds
+
+on:
+  schedule:
+    - cron: '*/30 * * * *' # GitHub may delay scheduled runs, so "every 30 minutes" is approximate
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: office-rounds
+  cancel-in-progress: false
+
+jobs:
+  rounds:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Run office rounds
+        run: npm run rounds
+        env:
+          HELIUS_API_KEY: ${{ secrets.HELIUS_API_KEY }}
+          OFFICE_ADDRESS: ${{ vars.OFFICE_ADDRESS }}
+          TOKEN_CA: ${{ vars.TOKEN_CA }}
+          SITE_URL: ${{ vars.SITE_URL }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      - name: Commit data
+        run: |
+          if [ -n "$(git status --porcelain public/data)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add public/data
+            git commit -m "office round $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+            git push
+          fi
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - id: deploy
+        uses: actions/deploy-pages@v4

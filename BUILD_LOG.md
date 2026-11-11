@@ -32,3 +32,7 @@ Missing: stamp 2 px screen nudge on result stamps; the intro was not measured on
 
 ## Stage 8 — Cards and keyring
 Done: five canvas cards (report, lease, renewed, eviction, hearing) at 1200×630, layout helpers unit-tested for long tickers; keyring export/import/clear e2e. Card dimensions verified by Playwright; visual quality only spot-checked.
+
+## Stage 9 — Office rounds
+Done: `scripts/rounds.ts` + pure `src/lease/rounds.ts`; workflow `office-rounds.yml`; dependabot. Ran locally against live mainnet: token facts for a real mint written; a simulated signed test lease on USDC (clause: authorities renounced) was inspected with all nine inspectors and evicted on the first round (authority checks are deterministic); data restored afterwards.
+Not verified: scanning a real Lease Office address (no office wallet exists yet), Telegram delivery, the workflow on GitHub itself, `actionlint` (not installed; YAML parses). Neighbours ran on the public RPC without a Helius key, so it likely reported UNVERIFIABLE for rate limits.
