@@ -29,7 +29,7 @@ export async function buildRecordTx(lease: Lease, office: string, blockhash: str
     new TransactionInstruction({
       programId: new PublicKey(MEMO_PROGRAM),
       keys: [{ pubkey: dev, isSigner: true, isWritable: false }],
-      data: Buffer.from(encodeMemo(lease), 'utf8'),
+      data: new TextEncoder().encode(encodeMemo(lease)) as unknown as Buffer, // no Buffer global in browsers
     }),
   );
   return tx.serialize({ requireAllSignatures: false, verifySignatures: false });

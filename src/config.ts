@@ -2,7 +2,9 @@ export const CONFIG = {
   PROJECT_NAME: 'LEASE',
   TICKER: '$LEASE',
   TOKEN_CA: '', // empty => pre-launch state everywhere
-  OFFICE_ADDRESS: '', // Lease Office pubkey; empty => "Record on-chain" hidden, register reads samples only
+  // Lease Office pubkey; empty => "Record on-chain" hidden, register reads samples only. `npm run dev` may read
+  // VITE_OFFICE_ADDRESS from .env.development.local for devnet testing.
+  OFFICE_ADDRESS: ((import.meta as { env?: Record<string, string | undefined> }).env?.VITE_OFFICE_ADDRESS ?? '') as string,
   X_URL: '',
   TELEGRAM_URL: '',
   GITHUB_URL: '',

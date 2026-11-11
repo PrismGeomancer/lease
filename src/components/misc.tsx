@@ -1,4 +1,5 @@
 import type { ComponentChildren } from 'preact';
+import { createPortal } from 'preact/compat';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { shorten } from '../lib/util';
 import { toast, toasts, dismiss } from '../lib/toast';
@@ -93,13 +94,15 @@ export function Modal({ open, onClose, title, children }: { open: boolean; onClo
     };
   }, [open, onClose]);
   if (!open) return null;
-  return (
+  // Portal to <body>: a modal must sit above everything regardless of where it is declared (header, page, footer).
+  return createPortal(
     <div class="backdrop" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div class="modal" role="dialog" aria-modal="true" aria-label={title} ref={ref}>
         <h2>{title}</h2>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

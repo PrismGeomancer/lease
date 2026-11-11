@@ -44,6 +44,14 @@ describe('truth guard', () => {
   });
 });
 
+describe('browser-safe code', () => {
+  it('uses no Node-only globals (Buffer, process) in src/', () => {
+    const src = walk(path.join(ROOT, 'src')).filter((f) => /\.(ts|tsx)$/.test(f));
+    const bad = src.filter((f) => /\bBuffer\.(from|alloc|concat)|\bprocess\.(env|cwd)/.test(readFileSync(f, 'utf8'))).map((f) => path.relative(ROOT, f));
+    expect(bad).toEqual([]);
+  });
+});
+
 describe.skipIf(!existsSync(path.join(ROOT, 'dist')))('dist secret scan', () => {
   const files = existsSync(path.join(ROOT, 'dist')) ? walk(path.join(ROOT, 'dist')).filter((f) => /\.(js|html|css|json|xml|webmanifest)$/.test(f)) : [];
   it('contains no API keys or Telegram tokens', () => {
