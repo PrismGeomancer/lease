@@ -11,6 +11,7 @@ import { InspectionDesk } from '../components/InspectionDesk';
 import { InspectionBoard } from '../components/InspectionBoard';
 import { IndexCard } from '../components/LeaseParts';
 import { KeyGlyph } from '../components/Icons';
+import { KpiRow } from '../components/Dashboard';
 import { useHold } from '../lib/useHold';
 import { prefersReducedMotion } from '../lib/util';
 import { loadBulletin, loadOffice, loadRegister, loadToken, loadOwnLease } from '../lib/data';
@@ -23,16 +24,13 @@ import { CLAUSE_SHORT, reading } from '../hearing/templates';
 
 /* ------------------------------------------------------------------ desk */
 function Desk({ office }: { office: Office | null }) {
-  const has = office && office.counts.onFile > 0;
   return (
     <section id="hero" class="deskhero container" aria-labelledby="hero-h">
       <div class="deskhero__head">
         <h1 id="hero-h" tabIndex={-1} data-reveal="heading">{copy.hero.h1a}{copy.hero.h1b}</h1>
         <p class="deskhero__sub">{copy.extra.deskSub}</p>
-        <p class="deskhero__facts" style={{ minHeight: '1.6em' }}>
-          {has ? copy.hero.facts(office.counts.onFile, office.counts.renewed, office.counts.evicted).join(' · ') : copy.hero.preOpening}
-        </p>
       </div>
+      <KpiRow office={office} />
       <div id="desk"><InspectionDesk /></div>
     </section>
   );
@@ -255,9 +253,9 @@ export default function Home() {
       <Desk office={office} />
       <BulletinStrip data={bulletin} />
       <Floor reg={reg} office={office} />
+      <Building token={token} own={own} />
       <SignSection />
       <HearingExplainer />
-      <Building token={token} own={own} />
       <Phases />
       <Faq />
     </>

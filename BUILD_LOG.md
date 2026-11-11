@@ -72,3 +72,9 @@ Real bugs this found and fixed: (1) wallet modal was painted under page content 
 
 ## Sample label removed (owner's call)
 Placeholder cards ($DRAFTY, $MOTEL, $ATTIC) stay; the "SAMPLE — FICTIONAL COIN" stamp, the "sample" caption and the "These are samples:" line are gone. They are still excluded from every count, the bulletin and register.json, and are not links. Note: the spec's rule (§2.3) required the label; with it removed, visitors cannot tell these are fictional.
+
+## Dashboard-first pass
+Audit found: no at-a-glance state, results were nine rows with no overall verdict, nothing remembered, no "yours" panel, board pushed below side panels on mobile.
+Done: KPI row (real counts, honest zeros, em dash while loading, last round time), tall segmented verdict bar with icon + label legend and a text alternative, thin bar per entry in "Recent inspections" (device-local, clearable), "Your desk" panel (wallet, my leases, keyring), desk layout reordered (form → verdict → board → side panels). Home order: desk, bulletin, register, $LEASE, sign demo, hearing, floors, FAQ.
+Tests: 86 unit, 39 e2e. Lighthouse mobile (local): Home 90/100/100/100, Inspect 92/100/100/100.
+Still open: real-wallet and devnet recording test; KPI trend/delta needs round history that does not exist yet; Keyring and 404 at desktop not re-reviewed; no dark/light theme switch (dark only).

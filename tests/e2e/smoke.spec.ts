@@ -42,7 +42,12 @@ test.describe('320px: no horizontal overflow', () => {
 
 test('home: empty states are honest (no fake activity)', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByText('Office open. Filing cabinet empty. Be the first tenant.')).toBeVisible();
+  // KPI row shows real zeros, never invented activity
+  const kpis = page.getByRole('list', { name: 'Office at a glance' });
+  await expect(kpis.getByText('Leases on file')).toBeVisible();
+  await expect(kpis.getByText('Be the first tenant')).toBeVisible();
+  await expect(kpis.getByText('None yet')).toBeVisible();
+  await expect(kpis.locator('.kpi__value').first()).toHaveText('0');
   await expect(page.getByText('Office quiet. No leases on file yet.')).toBeVisible();
   await expect(page.getByText('PENDING — NOT YET LISTED')).toBeVisible();
   await expect(page.getByText('SAMPLE — FICTIONAL COIN')).toHaveCount(0);

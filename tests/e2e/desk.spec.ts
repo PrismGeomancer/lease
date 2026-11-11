@@ -40,7 +40,8 @@ test('valid mint: nine rows resolve progressively with real findings and an over
   await expect(page.getByText('Mint authority is null. Nobody can print more.')).toBeVisible();
   // progressive: at some point fewer than nine have reported
   await expect(page.getByText(/^[1-8] of 9 inspectors reported$/)).toBeVisible({ timeout: 5000 }).catch(() => {});
-  await expect(page.getByText(/KEPT · \d WATCH · \d BREACHED · \d UNVERIFIABLE/)).toBeVisible({ timeout: 15000 });
+  await expect(page.getByRole('img', { name: /^Nine inspectors: .*(kept|unverifiable)/ })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByRole('img', { name: /pending/ })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Save to Keyring' })).toBeVisible();
   await expect(page.getByText('Evidence', { exact: true })).toBeVisible();
 });
@@ -72,4 +73,19 @@ test('sample chip runs an inspection in one click (320px, keyboard reachable)', 
   await expect(page.getByText('Mint authority is null. Nobody can print more.')).toBeVisible();
   const over = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(over).toBeLessThanOrEqual(0);
+});
+
+test('dashboard: verdict bar fills as inspectors report; recent list remembers the coin; your-desk panel prompts to connect', async ({ page }) => {
+  await mockNetwork(page);
+  await page.goto('/');
+  await expect(page.getByText('Coins you inspect appear here, on this device only.')).toBeVisible();
+  await expect(page.getByText('Connect the dev wallet to see its leases.')).toBeVisible();
+  await page.getByRole('button', { name: 'WIF' }).click();
+  await expect(page.getByRole('img', { name: /^Nine inspectors: .*kept/ }).first()).toBeVisible({ timeout: 15000 });
+  const recent = page.getByRole('region', { name: 'Recent inspections' }).or(page.locator('section[aria-labelledby="recent-h"]'));
+  await expect(recent.locator('.recent__row')).toHaveCount(1, { timeout: 15000 });
+  await page.reload();
+  await expect(page.locator('section[aria-labelledby="recent-h"] .recent__row')).toHaveCount(1);
+  await page.locator('section[aria-labelledby="recent-h"]').getByRole('button', { name: 'Clear' }).click();
+  await expect(page.getByText('Coins you inspect appear here, on this device only.')).toBeVisible();
 });

@@ -4,6 +4,8 @@ import { Button } from './Button';
 import { AddressChip } from './misc';
 import { InspectionLog, TokenImage, summaryLine, Evidence } from './InspectionParts';
 import { InspectionBoard } from './InspectionBoard';
+import { RecentList, VerdictBar, YourDesk } from './Dashboard';
+import { rememberInspection } from '../lib/recent';
 import { useInspection, validateMintInput } from '../lib/useInspection';
 import { toast } from '../lib/toast';
 import { saveKey } from '../lib/keyring';
@@ -45,6 +47,13 @@ export function InspectionDesk({ initialMint, full }: { initialMint?: string; fu
     setLease(l);
     await insp.run(mint, { lease: l ?? undefined });
   };
+
+  useEffect(() => {
+    if (!state.done || !state.mint) return;
+    const s = insp.summary;
+    rememberInspection({ mint: state.mint, label: clean(state.meta?.symbol ?? state.meta?.name ?? '', 24) || state.mint.slice(0, 6), kept: s.kept, watch: s.watch, breached: s.breached, unverifiable: s.unverifiable });
+     
+  }, [state.done, state.meta]);
 
   useEffect(() => {
     if (initialMint) { setInput(initialMint); void go(initialMint); }
@@ -102,9 +111,10 @@ export function InspectionDesk({ initialMint, full }: { initialMint?: string; fu
         )}
 
         {started && (
-          <p class="desk__summary" aria-live="polite">
-            {resolved === 9 ? summaryLine(insp.list) : `${resolved} of 9 inspectors reported`}
-          </p>
+          <div class="desk__verdict" aria-live="polite">
+            <VerdictBar counts={insp.summary} />
+            <span class="sr-only">{resolved === 9 ? summaryLine(insp.list) : `${resolved} of 9 inspectors reported`}</span>
+          </div>
         )}
 
         {state.done && (
@@ -127,6 +137,13 @@ export function InspectionDesk({ initialMint, full }: { initialMint?: string; fu
         <InspectionBoard findings={state.findings} running={state.running} started={started} />
         {started && <InspectionLog lines={state.log} />}
       </div>
+
+      {!full && (
+        <div class="desk__side">
+          <RecentList disabled={state.running} onPick={(m) => { setInput(m); void go(m); }} />
+          <YourDesk />
+        </div>
+      )}
 
       {full && state.done && <div class="desk__evidence"><Evidence list={insp.list} mint={state.mint!} /></div>}
     </div>
