@@ -32,7 +32,7 @@ export function Stamp({ status, size = 'md', animate, diagonal, rotate, text }: 
       ref={ref}
       class={cls}
       data-status={status}
-      style={{ '--stamp-color': meta.color, '--stamp-rot': `${rotate ?? -8}deg` } as Record<string, string>}
+      style={{ '--stamp-rot': `${rotate ?? -8}deg` } as Record<string, string>}
     >
       {meta.icon && <Svg d={meta.icon} />}
       <span>{text ?? meta.text}</span>

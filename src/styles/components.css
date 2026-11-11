@@ -35,6 +35,10 @@
   white-space: nowrap; mix-blend-mode: normal;
 }
 .stamp svg { width: 1.1em; height: 1.1em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.stamp[data-status='KEPT'], .stamp[data-status='RENEWED'] { --stamp-color: var(--ledger-green); }
+.stamp[data-status='BREACHED'], .stamp[data-status='EVICTED'] { --stamp-color: var(--stamp-red); }
+.stamp[data-status='WATCH'] { --stamp-color: var(--watch-amber); }
+.stamp[data-status='ACTIVE'] { --stamp-color: var(--brass); }
 .stamp--sm { --stamp-size: .7rem; } .stamp--md { --stamp-size: 1rem; }
 .stamp--lg { --stamp-size: 1.6rem; } .stamp--xl { --stamp-size: 2.6rem; }
 .stamp--outline { border-style: solid; border-width: 2px; opacity: .9; }
@@ -59,7 +63,7 @@
   mask: radial-gradient(circle at 8px 0, transparent 3px, #000 3.5px) 0 0 / 16px 12px repeat-x, linear-gradient(#000, #000) 0 12px / 100% calc(100% - 12px) no-repeat;
 }
 .tri__no { position: absolute; top: 14px; right: 14px; font: 500 .68rem var(--font-data); letter-spacing: .08em; color: var(--grey-on-paper); }
-.tri__title { font-size: 1.4rem; margin-bottom: var(--s-4); color: var(--ink); }
+.tri__title { font: 800 1.4rem/1 var(--font-head); font-stretch: 75%; text-transform: uppercase; letter-spacing: .02em; margin: 0 0 var(--s-4); color: var(--ink); }
 .tri__labels { display: flex; justify-content: space-between; font: 500 .68rem var(--font-data); text-transform: uppercase; letter-spacing: .08em; margin-top: var(--s-3); }
 .tri__labels span { opacity: 0; transition: opacity var(--d-s) 700ms; }
 .tri--torn .tri__labels span { opacity: 1; }
@@ -70,7 +74,7 @@
 .keytag { position: relative; display: flex; flex-direction: column; align-items: center; background: none; border: 0; color: inherit; padding: var(--s-3); cursor: pointer; width: 100%; font: inherit; }
 .keytag__key { width: 56px; height: 56px; transform-origin: 50% 0; transition: transform 500ms var(--ease-swing); }
 .keytag:hover .keytag__key, .keytag:focus-visible .keytag__key, .keytag[aria-expanded='true'] .keytag__key { transform: rotate(-10deg); }
-.keytag__tag { margin-top: var(--s-2); background: var(--form-white); color: var(--ink); padding: var(--s-2) var(--s-3); border-radius: 2px 10px 10px 2px; font: 500 .75rem var(--font-data); text-align: left; min-width: 120px; box-shadow: var(--sh-paper); }
+.keytag__tag { margin-top: var(--s-2); background: var(--form-white) var(--paper-grain); color: var(--ink); padding: var(--s-2) var(--s-3); border-radius: 2px 10px 10px 2px; font: 500 .75rem var(--font-data); text-align: left; min-width: 120px; box-shadow: var(--sh-paper); }
 .keytag__no { font: 400 1rem var(--font-display); }
 .keytag__detail { margin-top: var(--s-2); background: var(--form-white); color: var(--ink); border-radius: var(--r-paper); padding: var(--s-3); font-size: .85rem; text-align: left; box-shadow: var(--sh-lift); }
 

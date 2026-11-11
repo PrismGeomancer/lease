@@ -56,7 +56,7 @@ const inRange = (v: unknown, lo: number, hi: number): v is number =>
 // eslint-disable-next-line no-control-regex
 const CONTROL = /[\u0000-\u001f\u007f-\u009f‪-‮⁦-⁩]/;
 
-/** Strict shape guard. Returns a clean Lease or null. Never throws. */
+/** Strict shape guard. Gives a clean Lease or null. Never throws. */
 export function parseLease(x: unknown): Lease | null {
   if (typeof x !== 'object' || x === null || Array.isArray(x)) return null;
   const o = x as Record<string, unknown>;

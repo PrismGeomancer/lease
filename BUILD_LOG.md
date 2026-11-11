@@ -17,7 +17,7 @@ Deviation: memo is `LEASE1:` + raw canonical JSON (not base64url) because base64
 
 ## Stage 4 — Chain layer
 Done: RPC wrapper (fallback, backoff 200/400 ms, 60 s cache), DexScreener client, Helius client, PDA + Metaplex Borsh reader, nine inspectors, clause evaluation + state machine (`src/lease/evaluate.ts`), `npm run inspect -- <mint> [--neighbours]`. 44 unit tests; 100% coverage on lease/memo/evaluate.
-Live (this environment): public RPC `getAccountInfo`, DexScreener and Helius-less paths respond. Public RPC returns HTTP 429 for `getTokenLargestAccounts` (landlord/neighbours → UNVERIFIABLE) — a Helius key is needed for those.
+Live (this environment): public RPC `getAccountInfo`, DexScreener and Helius-less paths respond. Public RPC answers HTTP 429 for `getTokenLargestAccounts` (landlord/neighbours → UNVERIFIABLE) — a Helius key is needed for those.
 Fixtures: synthetic (shapes mirror real responses), defined inline in tests; not captured from live responses because the public RPC rate-limits the holder calls.
 Known gaps: LP rule for PumpSwap/Raydium is UNVERIFIABLE by design (no verified protocol-level burn guarantee).
 
@@ -36,3 +36,19 @@ Done: five canvas cards (report, lease, renewed, eviction, hearing) at 1200×630
 ## Stage 9 — Office rounds
 Done: `scripts/rounds.ts` + pure `src/lease/rounds.ts`; workflow `office-rounds.yml`; dependabot. Ran locally against live mainnet: token facts for a real mint written; a simulated signed test lease on USDC (clause: authorities renounced) was inspected with all nine inspectors and evicted on the first round (authority checks are deterministic); data restored afterwards.
 Not verified: scanning a real Lease Office address (no office wallet exists yet), Telegram delivery, the workflow on GitHub itself, `actionlint` (not installed; YAML parses). Neighbours ran on the public RPC without a Helius key, so it likely reported UNVERIFIABLE for rate limits.
+
+## Stage 10 — Hardening
+Done: CSP meta (build-only, build fails if an RPC host isn't allowed), canonical/OG url + sitemap when `SITE_URL` is set, manifest, icons, `og.png` (DEMO data), JSON-LD, README, dependabot, truth-guard test (banned words), dist secret scan, inlined CSS + font preloads, a11y fixes, 79 unit tests, 32 e2e tests.
+Lighthouse (mobile, local preview, simulated throttling): Home 90 / 100 / 100 / 100 (LCP 3.3 s); Inspect 95 / 100 / 100 / 100.
+Live-verified this session (Helius key in git-ignored .env): authority, metadata, holders, tenant inference, liquidity, bonding-curve LP and neighbours inspectors on a real pump.fun token; a signed test lease evicted by `rounds.ts`. Two real bugs found by live runs and fixed: transaction version ≥1 rejected; $0 bonding-curve liquidity flagged as BREACHED.
+
+### Manual QA checklist status (§31) — what was NOT done
+- [x] Intro plays / skips / once per session / reduced motion (Playwright)
+- [x] Hero hold-to-sign keyboard + click; early release (Playwright). Touch not tested.
+- [x] Invalid address; tampered lease link; keyring save/export/import
+- [x] 320 px no overflow on all routes
+- [ ] Wallet signing with a real wallet, record on devnet, register pickup, rounds on devnet — need a wallet and a funded office address
+- [ ] Three mainnet tokens recorded here (one bonding-curve token inspected live; migrated token and mint-authority-set token only as USDC)
+- [ ] 375 / 768 / 1280 / 1920 widths, screen reader, full keyboard journey Home→Lease — not done
+- [ ] Share-card visual check on every card with long/short ticker — dimensions tested only
+- [ ] Block-the-RPC-host degraded state — unit tested, not driven in a browser

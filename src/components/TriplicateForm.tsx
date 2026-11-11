@@ -23,7 +23,7 @@ export function TriplicateForm({ formNo, title, tilt = 0, torn, labels, max, chi
         <span class="smudge" style={{ left: '12%', bottom: '10%' }} aria-hidden="true" />
         <span class="smudge" style={{ right: '8%', top: '30%', width: '80px' }} aria-hidden="true" />
         <span class="tri__no">{formNo}</span>
-        {title && <h3 class="tri__title">{title}</h3>}
+        {title && <p class="tri__title">{title}</p>}
         {children}
         {labels && (
           <div class="tri__labels" aria-hidden={!torn}>

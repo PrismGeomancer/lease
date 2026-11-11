@@ -6,7 +6,7 @@ export const CONFIG = {
   X_URL: '',
   TELEGRAM_URL: '',
   GITHUB_URL: '',
-  BUY_URL: '', // label is "View market", never "Buy now"
+  BUY_URL: '', // label is "View market", a different label on purpose
   RPC_URL: '', // Helius RPC with a DOMAIN-RESTRICTED key
   HELIUS_API_BASE: '', // e.g. https://api.helius.xyz
   PUBLIC_RPC_FALLBACK: 'https://api.mainnet-beta.solana.com',

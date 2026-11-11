@@ -168,6 +168,7 @@ describe('market inspectors', () => {
     expect((await run('foundations', ctx(rpc, []))).status).toBe('UNVERIFIABLE');
     const lease = await makeLease({ c: { liq: 60_000 } });
     expect((await run('foundations', ctx(rpc, [pair({ liquidity: { usd: 50_000 } })], { lease }))).status).toBe('BREACHED');
+    expect((await run('foundations', ctx(rpc, [pair({ dexId: 'pumpfun', liquidity: { usd: 0 } })]))).status).toBe('UNVERIFIABLE');
     // picks the highest-liquidity pair
     const f = await run('foundations', ctx(rpc, [pair({ liquidity: { usd: 1 } }), pair({ liquidity: { usd: 99_000 }, pairAddress: 'BIG' })]));
     expect(f.value).toBe(99_000);

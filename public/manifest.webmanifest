@@ -1,0 +1,13 @@
+{
+  "name": "LEASE",
+  "short_name": "LEASE",
+  "description": "The Leasing Office for Solana coins.",
+  "start_url": "./",
+  "display": "standalone",
+  "theme_color": "#11172A",
+  "background_color": "#11172A",
+  "icons": [
+    { "src": "./favicon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

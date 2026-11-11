@@ -27,7 +27,7 @@ export function KeyTag({ index, name, checks, joke, status = 'PENDING', source, 
         }}
       >
         <span class="keytag__key"><KeyGlyph size={56} /></span>
-        <span class="keytag__tag">
+        <span class="keytag__tag paper">
           <span class="keytag__no">{index}</span> {name}
           <br />
           <Stamp status={status} size="sm" text={demo ? `DEMO · ${status}` : undefined} />

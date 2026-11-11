@@ -8,7 +8,7 @@ function seeded(i: number): number {
 
 /**
  * Scroll reveals for the current route. Transforms and opacity only; once per element.
- * Returns a cleanup that reverts everything (called on route change).
+ * Gives a cleanup that reverts everything (called on route change).
  */
 export async function initReveals(root: ParentNode = document): Promise<() => void> {
   if (prefersReducedMotion()) return () => {};

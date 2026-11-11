@@ -14,6 +14,27 @@ export function estimateFeeSol(): string {
   return (lamports / 1e9).toFixed(7).replace(/0+$/, '');
 }
 
+/**
+ * Build the unsigned transaction: [compute budget x2] + transfer(office) + Memo v2. Fee payer = the dev.
+ * Lazy-loads web3.js. Gives the serialized (unsigned) bytes for the wallet to sign and send.
+ */
+export async function buildRecordTx(lease: Lease, office: string, blockhash: string, lamports = 0): Promise<Uint8Array> {
+  const { PublicKey, Transaction, SystemProgram, TransactionInstruction, ComputeBudgetProgram } = await import('@solana/web3.js');
+  const dev = new PublicKey(lease.dev);
+  const tx = new Transaction({ feePayer: dev, recentBlockhash: blockhash });
+  tx.add(
+    ComputeBudgetProgram.setComputeUnitLimit({ units: COMPUTE_UNIT_LIMIT }),
+    ComputeBudgetProgram.setComputeUnitPrice({ microLamports: PRIORITY_MICROLAMPORTS }),
+    SystemProgram.transfer({ fromPubkey: dev, toPubkey: new PublicKey(office), lamports }),
+    new TransactionInstruction({
+      programId: new PublicKey(MEMO_PROGRAM),
+      keys: [{ pubkey: dev, isSigner: true, isWritable: false }],
+      data: Buffer.from(encodeMemo(lease), 'utf8'),
+    }),
+  );
+  return tx.serialize({ requireAllSignatures: false, verifySignatures: false });
+}
+
 export type RecordStage = 'wallet' | 'sending' | 'confirming' | 'done';
 
 /**
@@ -23,20 +44,11 @@ export type RecordStage = 'wallet' | 'sending' | 'confirming' | 'done';
  */
 export async function recordLease(lease: Lease, onStage: (s: RecordStage) => void, lamports = 0): Promise<string> {
   if (!CONFIG.OFFICE_ADDRESS) throw new Error('No office address configured');
-  const web3 = await import('@solana/web3.js'); // lazy chunk
-  const { PublicKey, Transaction, SystemProgram, TransactionInstruction, ComputeBudgetProgram } = web3;
   const rpc = getRpc();
-  const dev = new PublicKey(lease.dev);
   const bh = await rpc.call<{ value: { blockhash: string; lastValidBlockHeight: number } }>('getLatestBlockhash', [{ commitment: 'confirmed' }]);
-  const tx = new Transaction({ feePayer: dev, recentBlockhash: bh.value.blockhash });
-  tx.add(
-    ComputeBudgetProgram.setComputeUnitLimit({ units: COMPUTE_UNIT_LIMIT }),
-    ComputeBudgetProgram.setComputeUnitPrice({ microLamports: PRIORITY_MICROLAMPORTS }),
-    SystemProgram.transfer({ fromPubkey: dev, toPubkey: new PublicKey(CONFIG.OFFICE_ADDRESS), lamports }),
-    new TransactionInstruction({ programId: new PublicKey(MEMO_PROGRAM), keys: [{ pubkey: dev, isSigner: true, isWritable: false }], data: new TextEncoder().encode(encodeMemo(lease)) as unknown as Buffer }),
-  );
+  const tx = await buildRecordTx(lease, CONFIG.OFFICE_ADDRESS, bh.value.blockhash, lamports);
   onStage('wallet');
-  const bytes = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
+  const bytes = tx;
   onStage('sending');
   const sig = await signAndSend(bytes, network() === 'devnet' ? 'solana:devnet' : 'solana:mainnet');
   onStage('confirming');
@@ -53,7 +65,7 @@ export async function recordLease(lease: Lease, onStage: (s: RecordStage) => voi
 
 /** blockTime (unix s) of a recorded signature, or null. */
 export async function blockTimeOf(sig: string): Promise<number | null> {
-  const tx = await getRpc().call<{ blockTime: number | null } | null>('getTransaction', [sig, { maxSupportedTransactionVersion: 0, commitment: 'confirmed' }]);
+  const tx = await getRpc().call<{ blockTime: number | null } | null>('getTransaction', [sig, { maxSupportedTransactionVersion: 255, commitment: 'confirmed' }]);
   return tx?.blockTime ?? null;
 }
 export const sigBytes = (s: string) => bs58.decode(s);

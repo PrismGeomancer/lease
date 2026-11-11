@@ -22,7 +22,7 @@ export interface RoundResult {
 
 const day = (t: number) => new Date(t * 1000).toISOString().slice(0, 10);
 
-/** Apply one round of findings to a lease history. Pure: returns a new history. */
+/** Apply one round of findings to a lease history. Pure: gives back a new history. */
 export function processRound(h: LeaseHistory, findings: Finding[], t: number): RoundResult {
   const clauses = clauseStatuses(h.lease, findings);
   const rec: LeaseRecord = {

@@ -166,5 +166,5 @@ export interface ParsedTx {
   } | null;
 }
 export async function getParsedTx(rpc: Rpc, signature: string): Promise<ParsedTx | null> {
-  return rpc.call<ParsedTx | null>('getTransaction', [signature, { encoding: 'jsonParsed', maxSupportedTransactionVersion: 0, commitment: 'confirmed' }]);
+  return rpc.call<ParsedTx | null>('getTransaction', [signature, { encoding: 'jsonParsed', maxSupportedTransactionVersion: 255, commitment: 'confirmed' }]);
 }

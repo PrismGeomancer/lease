@@ -1,7 +1,7 @@
 /** Pure text-layout helpers (no DOM) so they can be unit-tested with a fake measurer. */
 export type Measure = (text: string, sizePx: number) => number;
 
-/** Largest font size in [min, start] at which `text` fits `maxW`; returns `min` if nothing fits. */
+/** Largest font size in [min, start] at which `text` fits `maxW`; gives `min` if nothing fits. */
 export function fitSize(measure: Measure, text: string, maxW: number, start: number, min: number): number {
   for (let s = start; s >= min; s -= 2) if (measure(text, s) <= maxW) return s;
   return min;

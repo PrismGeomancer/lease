@@ -22,7 +22,7 @@ export function encodeLease(l: Lease): string {
   return b64urlEncode(bytes);
 }
 
-/** Decode a `#/l/:payload` string. Returns null for anything malformed or oversize. */
+/** Decode a `#/l/:payload` string. Gives null for anything malformed or oversize. */
 export function decodeLease(payload: string): Lease | null {
   try {
     if (payload.length > Math.ceil((MAX_PAYLOAD_BYTES * 4) / 3) + 4) return null;

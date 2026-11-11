@@ -3,8 +3,16 @@ import { landlordStatus } from '../thresholds';
 import { acct, mk, topHolders } from './common';
 
 export const landlord: Inspector = async (ctx) => {
-  const h = await topHolders(ctx);
   const source = { label: 'Solana RPC · largest token accounts', url: acct(ctx, ctx.mint) };
+  let h;
+  try {
+    h = await topHolders(ctx);
+  } catch (e) {
+    if (/too many accounts|overloaded/i.test((e as Error).message)) {
+      return mk('landlord', 'UNVERIFIABLE', "Too many holders for the RPC to list. Marked UNVERIFIABLE, not guilty.", source, { evidence: { clauses: { tt: 'UNVERIFIABLE' } } });
+    }
+    throw e;
+  }
   if (h.supply === 0n || h.rows.length === 0) {
     return mk('landlord', 'UNVERIFIABLE', 'No ordinary holders found to measure.', source, { evidence: { clauses: { tt: 'UNVERIFIABLE' } } });
   }

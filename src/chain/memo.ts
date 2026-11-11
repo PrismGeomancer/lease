@@ -29,7 +29,7 @@ export function decodeMemo(memo: string): Lease | null {
   }
 }
 
-/** Solana RPC returns memo log text as `[len] <memo>`; getSignaturesForAddress `memo` field likewise. */
+/** Solana RPC gives memo log text as `[len] <memo>`; getSignaturesForAddress `memo` field likewise. */
 export function stripMemoLength(raw: string): string {
   return raw.replace(/^\[\d+\]\s/, '');
 }

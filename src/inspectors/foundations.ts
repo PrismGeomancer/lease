@@ -7,6 +7,12 @@ export const foundations: Inspector = async (ctx) => {
   const source = { label: 'DexScreener', url: pair?.url };
   if (!pair) return mk('foundations', 'UNVERIFIABLE', 'No market found for this token.', source, { evidence: { clauses: { liq: 'UNVERIFIABLE' } } });
   const usd = pair.liquidity?.usd ?? 0;
+  if (pair.dexId === 'pumpfun' && usd === 0) {
+    // DexScreener reports no liquidity for bonding-curve pairs. A missing number is not a breach.
+    return mk('foundations', 'UNVERIFIABLE', 'Bonding curve: DexScreener reports no liquidity figure yet.', source, {
+      evidence: { clauses: { liq: 'UNVERIFIABLE' }, dexId: pair.dexId },
+    });
+  }
   const status = foundationsStatus(usd, ctx.lease?.c.liq);
   const ageDays = pair.pairCreatedAt ? Math.floor((ctx.now - pair.pairCreatedAt) / 86_400_000) : null;
   const usdText = Math.round(usd).toLocaleString('en-US');
