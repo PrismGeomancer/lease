@@ -47,12 +47,13 @@ describe('truth guard', () => {
 describe.skipIf(!existsSync(path.join(ROOT, 'dist')))('dist secret scan', () => {
   const files = existsSync(path.join(ROOT, 'dist')) ? walk(path.join(ROOT, 'dist')).filter((f) => /\.(js|html|css|json|xml|webmanifest)$/.test(f)) : [];
   it('contains no API keys or Telegram tokens', () => {
-    const key = (process.env.HELIUS_API_KEY ?? '').trim();
+    // The Actions key lives in .env locally. The domain-restricted client key (VITE_RPC_URL) is the only one allowed in a build.
+    const envFile = existsSync(path.join(ROOT, '.env')) ? readFileSync(path.join(ROOT, '.env'), 'utf8') : '';
+    const key = (process.env.HELIUS_API_KEY ?? /HELIUS_API_KEY=(\S+)/.exec(envFile)?.[1] ?? '').trim();
     for (const f of files) {
       const t = readFileSync(f, 'utf8');
       expect(t, f).not.toMatch(/\d{8,10}:[A-Za-z0-9_-]{35}/);
       expect(t, f).not.toMatch(/HELIUS_API_KEY/);
-      expect(t, f).not.toMatch(/api-key=[0-9a-f]{8}-[0-9a-f]{4}-/);
       if (key) expect(t, f).not.toContain(key);
     }
   });

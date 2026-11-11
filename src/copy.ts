@@ -264,6 +264,9 @@ export const copy = {
     walletMissing: 'No wallet detected. Install Phantom, Solflare or Backpack.',
     openInWallet: "Open this page in your wallet's browser.",
     demoHint: 'Demo data. Not a real inspection.',
+    tryKnown: 'Try a known token:',
+    deskSub: 'Paste any Solana token and nine inspectors check it against the chain. Devs can sign a lease; the same inspectors hold them to it.',
+    signHeading: 'Put your promise on paper.',
   },
   footer: {
     line: 'The Leasing Office for Solana coins. Holders get the truth. Devs get trust. Everyone gets receipts.',

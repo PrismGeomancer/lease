@@ -6,12 +6,10 @@ import { Heading } from '../components/Heading';
 import { Show } from '../components/Show';
 import { Stamp } from '../components/Stamp';
 import { TriplicateForm } from '../components/TriplicateForm';
-import { KeyTag } from '../components/KeyTag';
-import { Accordion, AddressChip, CopyButton, ExternalLink } from '../components/misc';
+import { Accordion, CopyButton, ExternalLink } from '../components/misc';
 import { InspectionDesk } from '../components/InspectionDesk';
-import { InspectorTable } from '../components/InspectionParts';
+import { InspectionBoard } from '../components/InspectionBoard';
 import { IndexCard } from '../components/LeaseParts';
-import { Notice } from '../components/Notice';
 import { KeyGlyph } from '../components/Icons';
 import { useHold } from '../lib/useHold';
 import { prefersReducedMotion } from '../lib/util';
@@ -21,85 +19,27 @@ import { SAMPLES } from '../samples';
 import { useInspection } from '../lib/useInspection';
 import { encodeLease } from '../lease/encode';
 import type { Lease } from '../lease/schema';
-import { CLAUSE_SHORT } from '../hearing/templates';
-import { reading } from '../hearing/templates';
-import type { FindingStatus } from '../types';
+import { CLAUSE_SHORT, reading } from '../hearing/templates';
 
-/* ------------------------------------------------------------------ hero */
-const SIG_PATH = 'M6 62 C 20 20, 34 10, 40 40 S 52 70, 66 30 C 74 6, 84 8, 86 36 S 100 64, 124 34 C 134 22, 144 24, 148 44 S 170 58, 214 26';
-
-function HeroForm() {
-  const [torn, setTorn] = useState(false);
-  const complete = () => setTorn(true);
-  const { progress, handlers } = useHold({ durationMs: 1400, onComplete: complete });
-  const p = torn ? 1 : progress;
-  const L = 320;
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || prefersReducedMotion() || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-    const move = (e: PointerEvent) => {
-      const x = e.clientX / innerWidth - 0.5, y = e.clientY / innerHeight - 0.5;
-      el.style.transform = `perspective(900px) rotateY(${(x * 8).toFixed(2)}deg) rotateX(${(-y * 8).toFixed(2)}deg)`;
-    };
-    window.addEventListener('pointermove', move, { passive: true });
-    return () => window.removeEventListener('pointermove', move);
-  }, []);
-
-  return (
-    <div class="hero__form" ref={ref} data-hero-form>
-      <TriplicateForm formNo="FORM L-01 / REV. 3" title={copy.intro.typewriter.replace('FORM L-01 — ', '')} tilt={-3} torn={torn} labels max={460}>
-        <p class="mono" style={{ fontSize: '.8rem' }}>The tenant agrees to keep the terms below, in public, for the full term.</p>
-        <ul class="hero__terms mono">
-          <li>Mint and freeze authority renounced</li>
-          <li>Dev holds at most 5% of supply</li>
-          <li>No dev sells for 14 days</li>
-        </ul>
-        <div
-          class="sigline" role="button" tabIndex={0} aria-label={copy.hero.holdHint} aria-describedby="sig-hint"
-          {...handlers} style={{ touchAction: 'none' }}
-        >
-          <svg viewBox="0 0 220 80" aria-hidden="true">
-            <path d={SIG_PATH} fill="none" stroke="#1d2b6b" stroke-width="3" stroke-linecap="round" opacity={p > 0 ? 1 : 0} stroke-dasharray={L} stroke-dashoffset={L * (1 - p)} />
-          </svg>
-          <span class="sigline__x mono">✕</span>
-        </div>
-        <p id="sig-hint" class="mono hero__hint">{torn ? '' : `${copy.hero.holdHint} · ${copy.hero.holdKeyboard}`}</p>
-        <div class="hero__stampbox">{torn && <Stamp status="ACTIVE" size="md" animate text={copy.hero.signedDemo} />}</div>
-        {torn
-          ? <a href="#/draft" class="btn btn--primary btn--sm">{copy.hero.signReal}</a>
-          : <Button size="sm" variant="secondary" onPaper onClick={complete}>{copy.hero.signDemo}</Button>}
-      </TriplicateForm>
-    </div>
-  );
-}
-
-function Hero({ office }: { office: Office | null }) {
+/* ------------------------------------------------------------------ desk */
+function Desk({ office }: { office: Office | null }) {
   const has = office && office.counts.onFile > 0;
   return (
-    <section id="hero" class="hero container" aria-labelledby="hero-h">
-      <div class="hero__text">
-        <p class="label hero__eyebrow">{copy.hero.eyebrow}</p>
-        <h1 id="hero-h" tabIndex={-1} class="display" data-reveal="heading">
-          <span>{copy.hero.h1a}</span><em class="accent" data-accent>{copy.hero.h1b}</em>
-        </h1>
-        <p class="hero__sub">{copy.hero.sub}</p>
-        <div class="hero__cta">
-          <Button size="lg" href="#/inspect">{copy.hero.ctaInspect}</Button>
-          <Button size="lg" variant="secondary" href="#/draft">{copy.hero.ctaSign}</Button>
-        </div>
-        <p class="mono hero__facts" style={{ minHeight: '1.6em' }}>
+    <section id="hero" class="deskhero container" aria-labelledby="hero-h">
+      <div class="deskhero__head">
+        <h1 id="hero-h" tabIndex={-1} data-reveal="heading">{copy.hero.h1a}{copy.hero.h1b}</h1>
+        <p class="deskhero__sub">{copy.extra.deskSub}</p>
+        <p class="deskhero__facts" style={{ minHeight: '1.6em' }}>
           {has ? copy.hero.facts(office.counts.onFile, office.counts.renewed, office.counts.evicted).join(' · ') : copy.hero.preOpening}
         </p>
       </div>
-      <HeroForm />
+      <div id="desk"><InspectionDesk /></div>
     </section>
   );
 }
 
 /* -------------------------------------------------------------- bulletin */
-function Bulletin({ data }: { data: Bulletin | null }) {
+function BulletinStrip({ data }: { data: Bulletin | null }) {
   const [paused, setPaused] = useState(false);
   const items = data?.items ?? [];
   const text = items.map((i) => ({
@@ -111,9 +51,9 @@ function Bulletin({ data }: { data: Bulletin | null }) {
   }));
   return (
     <section id="bulletin" class="bulletin" aria-label={copy.bulletin.label}>
-      <span class="bulletin__label mono">{copy.bulletin.label}</span>
+      <span class="bulletin__label">{copy.bulletin.label}</span>
       {text.length === 0 ? (
-        <p class="bulletin__empty mono">{copy.bulletin.empty}</p>
+        <p class="bulletin__empty">{copy.bulletin.empty}</p>
       ) : (
         <>
           <div class={`bulletin__track${paused || prefersReducedMotion() ? ' is-paused' : ''}`} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusIn={() => setPaused(true)} onFocusOut={() => setPaused(false)}>
@@ -130,126 +70,78 @@ function Bulletin({ data }: { data: Bulletin | null }) {
   );
 }
 
-/* ------------------------------------------------------------------- how */
-function How() {
-  const [flip, setFlip] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  const reduced = prefersReducedMotion();
-  useEffect(() => {
-    if (reduced || !ref.current) return;
-    let visible = false;
-    const io = new IntersectionObserver(([e]) => { visible = !!e?.isIntersecting; });
-    io.observe(ref.current);
-    const t = setInterval(() => visible && setFlip((f) => !f), 3000);
-    return () => { io.disconnect(); clearInterval(t); };
-  }, [reduced]);
-  const offsets = [0, 24, 8, 32];
+/* ------------------------------------------------- register + sign (floor) */
+const SIG_PATH = 'M6 62 C 20 20, 34 10, 40 40 S 52 70, 66 30 C 74 6, 84 8, 86 36 S 100 64, 124 34 C 134 22, 144 24, 148 44 S 170 58, 214 26';
+
+function SignDemo() {
+  const [torn, setTorn] = useState(false);
+  const { progress, handlers } = useHold({ durationMs: 1400, onComplete: () => setTorn(true) });
+  const p = torn ? 1 : progress;
+  const L = 320;
   return (
-    <section id="how" class="section corkboard" aria-labelledby="how-h">
-      <div class="container">
-        <Heading parts={copy.how.heading} id="how-h" />
-        <p>{copy.how.lede}</p>
-        <ol class="how__steps">
-          {copy.how.steps.map((s, i) => (
-            <li key={i} class="how__card paper" style={{ '--off': `${offsets[i]}px` } as Record<string, string>} data-reveal="card">
-              <span class="how__pin" aria-hidden="true" />
-              <span class="label">FORM L-0{i + 1}</span>
-              <h3>{i + 1}. {s.t}</h3>
-              <p>{s.b}</p>
-              {i === 3 && (
-                <div class="flipper" ref={ref}>
-                  <div class={`flipper__in${flip && !reduced ? ' is-flipped' : ''}`}>
-                    <div class="flipper__face"><Stamp status="RENEWED" size="md" /></div>
-                    <div class="flipper__face flipper__back"><Stamp status="EVICTED" size="md" /></div>
-                  </div>
-                  {reduced && <div class="flipper__both"><Stamp status="RENEWED" size="sm" /> <Stamp status="EVICTED" size="sm" /></div>}
-                </div>
-              )}
-            </li>
-          ))}
-        </ol>
+    <TriplicateForm formNo="FORM L-01 / REV. 3" title="Lease agreement" tilt={-2} torn={torn} labels max={440}>
+      <ul class="demo__terms">
+        <li>Mint and freeze authority renounced</li>
+        <li>Dev holds at most 5% of supply</li>
+        <li>No dev sells for 14 days</li>
+      </ul>
+      <div class="sigline" role="button" tabIndex={0} aria-label={copy.hero.holdHint} aria-describedby="sig-hint" {...handlers} style={{ touchAction: 'none' }}>
+        <svg viewBox="0 0 220 80" aria-hidden="true">
+          <path d={SIG_PATH} fill="none" stroke="#1d2b6b" stroke-width="3" stroke-linecap="round" opacity={p > 0 ? 1 : 0} stroke-dasharray={L} stroke-dashoffset={L * (1 - p)} />
+        </svg>
+        <span class="sigline__x">✕</span>
+      </div>
+      <p id="sig-hint" class="demo__hint">{torn ? '' : `${copy.hero.holdHint}. ${copy.hero.holdKeyboard}.`}</p>
+      <div class="demo__foot">
+        {torn ? (
+          <>
+            <Stamp status="ACTIVE" size="md" animate text={copy.hero.signedDemo} />
+            <a href="#/draft" class="btn btn--primary btn--sm">{copy.hero.signReal}</a>
+          </>
+        ) : (
+          <Button size="sm" variant="secondary" onPaper onClick={() => setTorn(true)}>{copy.hero.signDemo}</Button>
+        )}
+      </div>
+    </TriplicateForm>
+  );
+}
+
+function Floor({ reg, office }: { reg: Register | null; office: Office | null }) {
+  const real = reg?.leases.slice().sort((a, b) => b.start - a.start).slice(0, 6) ?? [];
+  return (
+    <section id="register-preview" class="section container" aria-labelledby="rp-h">
+      <div class="floor__head">
+        <Heading parts={copy.register.heading} id="rp-h" />
+        <Button variant="secondary" href="#/register">{copy.register.cta}</Button>
+      </div>
+      <p>{copy.register.lede} {office && office.counts.onFile > 0 && <span class="mono">{copy.hero.facts(office.counts.onFile, office.counts.renewed, office.counts.evicted).join(', ')}.</span>}</p>
+      {real.length === 0 && <p class="mono">{copy.register.empty}</p>}
+      <div class="drawer-cards">
+        {(real.length ? real : SAMPLES).map((e) => <IndexCard key={e.fp} entry={e} />)}
       </div>
     </section>
   );
 }
 
-/* ------------------------------------------------------------- inspectors */
-const DEMO_RESULTS: FindingStatus[] = ['KEPT', 'KEPT', 'WATCH', 'KEPT', 'KEPT', 'WATCH', 'UNVERIFIABLE', 'KEPT', 'UNVERIFIABLE'];
-const SOURCES = ['Solana RPC', 'Solana RPC', 'Helius DAS / Metaplex', 'Solana RPC', 'Solana RPC', 'DexScreener', 'Solana RPC + DexScreener', 'DexScreener', 'Solana RPC / Helius'];
-
-function Inspectors() {
-  const [demo, setDemo] = useState<(FindingStatus | undefined)[]>([]);
-  const timers = useRef<number[]>([]);
-  useEffect(() => () => timers.current.forEach(clearTimeout), []);
-  const runDemo = () => {
-    timers.current.forEach(clearTimeout);
-    setDemo([]);
-    const step = prefersReducedMotion() ? 0 : 180;
-    DEMO_RESULTS.forEach((r, i) => {
-      timers.current.push(window.setTimeout(() => setDemo((d) => { const n = [...d]; n[i] = r; return n; }), step * (i + 1)));
-    });
-  };
+function SignSection() {
   return (
-    <section id="inspectors" class="section container" aria-labelledby="insp-h">
-      <Heading parts={copy.inspectors.heading} id="insp-h" />
-      <p>{copy.inspectors.lede}</p>
-      <div class="cabinet">
-        {copy.inspectors.tags.map((t, i) => (
-          <KeyTag key={t.n} index={t.n} name={t.name} checks={t.checks} joke={t.joke} source={SOURCES[i]} status={demo[i] ?? 'PENDING'} demo={!!demo[i]} />
-        ))}
+    <section id="draft-teaser" class="section container split" aria-labelledby="dt-h">
+      <div>
+        <h2 id="dt-h" data-reveal="heading">{copy.extra.signHeading}</h2>
+        <p>{copy.teaser.body}</p>
+        <ol class="steps4" aria-label="How a lease works">
+          {copy.how.steps.map((s) => (
+            <li key={s.t}><strong>{s.t}</strong> {s.b}</li>
+          ))}
+        </ol>
+        <Button size="lg" href="#/draft">{copy.teaser.cta}</Button>
       </div>
-      <div class="cabinet__actions">
-        <Button variant="secondary" onClick={runDemo}>{copy.inspectors.demoRound}</Button>
-        <Button href="#desk" onClick={(e) => { e.preventDefault(); document.getElementById('desk')?.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth' }); document.getElementById('mint-desk')?.focus({ preventScroll: true }); }}>{copy.inspectors.inspectReal}</Button>
-      </div>
-      <p class="mono">{copy.inspectors.footnote}</p>
+      <SignDemo />
     </section>
   );
 }
 
 /* ---------------------------------------------------------------- others */
-function Desk() {
-  return (
-    <section id="desk" class="section container" aria-labelledby="desk-h">
-      <Heading parts={copy.desk.heading} id="desk-h" />
-      <p>{copy.desk.lede}</p>
-      <InspectionDesk />
-    </section>
-  );
-}
-
-function DraftTeaser() {
-  const lines = ['Authorities renounced', 'Dev holds at most 5% of supply', 'No dev sells for 14 days'];
-  return (
-    <section id="draft-teaser" class="section container split" aria-labelledby="dt-h">
-      <div>
-        <Heading parts={copy.teaser.heading} id="dt-h" />
-        <p>{copy.teaser.body}</p>
-        <Button size="lg" href="#/draft">{copy.teaser.cta}</Button>
-      </div>
-      <TriplicateForm formNo="FORM L-01 / REV. 3" title="Lease agreement" tilt={2} max={460}>
-        <ul class="hero__terms mono">{lines.map((l) => <li key={l}>{l}</li>)}</ul>
-        <p class="ghostsig" aria-hidden="true">Tenant</p>
-      </TriplicateForm>
-    </section>
-  );
-}
-
-function RegisterPreview({ reg }: { reg: Register | null }) {
-  const real = reg?.leases.slice().sort((a, b) => b.start - a.start).slice(0, 6) ?? [];
-  return (
-    <section id="register-preview" class="section container" aria-labelledby="rp-h">
-      <Heading parts={copy.register.heading} id="rp-h" />
-      <p>{copy.register.lede}</p>
-      {real.length === 0 && <p class="mono">{copy.register.empty}</p>}
-      <div class="drawer-cards">
-        {(real.length ? real : SAMPLES).map((e) => <IndexCard key={e.fp} entry={e} />)}
-      </div>
-      <Button variant="secondary" href="#/register">{copy.register.cta}</Button>
-    </section>
-  );
-}
-
 function HearingExplainer() {
   const ex = reading('liquidity', { min: '5,000' });
   return (
@@ -277,16 +169,14 @@ function Building({ token, own }: { token: TokenFacts | null; own: Lease | null 
       <Heading parts={copy.building.heading} id="bd-h" />
       <p>{copy.building.lede}</p>
       <div class="split split--7-5">
-        <TriplicateForm formNo="FORM L-01 · $LEASE" title="$LEASE — lease agreement" max={640}>
-          {live ? (
-            <InspectorTable findings={insp.state.findings} />
-          ) : (
-            <>
-              <Stamp status="PENDING" size="lg" text={copy.building.pending} />
-              <p>{copy.building.preLaunch}</p>
-            </>
-          )}
-        </TriplicateForm>
+        {live ? (
+          <InspectionBoard findings={insp.state.findings} running={insp.state.running} started />
+        ) : (
+          <TriplicateForm formNo="FORM L-01 · $LEASE" title="$LEASE lease agreement" max={640}>
+            <Stamp status="PENDING" size="lg" text={copy.building.pending} />
+            <p>{copy.building.preLaunch}</p>
+          </TriplicateForm>
+        )}
         <div>
           <dl class="facts mono">
             <dt>{f.supply}</dt><dd>{live ? (token?.supply ?? '—') : '—'}</dd>
@@ -310,11 +200,13 @@ function Building({ token, own }: { token: TokenFacts | null; own: Lease | null 
 function Phases() {
   const [floor, setFloor] = useState(0);
   const [open, setOpen] = useState(true);
+  const t = useRef<number>(0);
+  useEffect(() => () => clearTimeout(t.current), []);
   const pick = (i: number) => {
     if (i === floor) return;
     if (prefersReducedMotion()) { setFloor(i); return; }
     setOpen(false);
-    setTimeout(() => { setFloor(i); setOpen(true); }, 750);
+    t.current = window.setTimeout(() => { setFloor(i); setOpen(true); }, 750);
   };
   return (
     <section id="phases" class="section container" aria-labelledby="ph-h">
@@ -361,13 +253,10 @@ export default function Home() {
   }, []);
   return (
     <>
-      <Hero office={office} />
-      <Bulletin data={bulletin} />
-      <How />
-      <Inspectors />
-      <Desk />
-      <DraftTeaser />
-      <RegisterPreview reg={reg} />
+      <Desk office={office} />
+      <BulletinStrip data={bulletin} />
+      <Floor reg={reg} office={office} />
+      <SignSection />
       <HearingExplainer />
       <Building token={token} own={own} />
       <Phases />
@@ -375,5 +264,3 @@ export default function Home() {
     </>
   );
 }
-
-export { Notice, AddressChip };

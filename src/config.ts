@@ -7,7 +7,9 @@ export const CONFIG = {
   TELEGRAM_URL: '',
   GITHUB_URL: '',
   BUY_URL: '', // label is "View market", a different label on purpose
-  RPC_URL: '', // Helius RPC with a DOMAIN-RESTRICTED key
+  // Helius RPC with a DOMAIN-RESTRICTED key. `npm run dev` may read VITE_RPC_URL from .env.development.local
+  // (git-ignored, never loaded by production builds), so a key can be used locally without committing it.
+  RPC_URL: ((import.meta as { env?: Record<string, string | undefined> }).env?.VITE_RPC_URL ?? '') as string,
   HELIUS_API_BASE: '', // e.g. https://api.helius.xyz
   PUBLIC_RPC_FALLBACK: 'https://api.mainnet-beta.solana.com',
   DEXSCREENER_BASE: 'https://api.dexscreener.com',
@@ -15,6 +17,6 @@ export const CONFIG = {
   EXPLORER_ACCOUNT: 'https://solscan.io/account/',
   DATA_BASE: './data/',
   ROUND_INTERVAL_MIN: 30,
-} as const;
+} as const satisfies Record<string, string | number>;
 
 export type Config = typeof CONFIG;

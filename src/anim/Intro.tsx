@@ -72,6 +72,7 @@ export function Intro({ onDone }: { onDone: () => void }) {
       const tw = { i: 0 };
       const line = gsap.timeline({ onComplete: () => { unlock(); finish(); } });
       tl.current = line;
+      line.timeScale(1.8); // keep it short: the working desk is the point
       gsap.set(form, { y: 600, rotation: 6, opacity: 1 });
       gsap.set(keyEl, { y: -500, opacity: 0 });
       gsap.set(stampEl, { opacity: 0, scale: 1.4 });
@@ -91,7 +92,7 @@ export function Intro({ onDone }: { onDone: () => void }) {
         // 3.2 lamp widens, form flips into the hero slot
         .to(lamp, { scale: 3, duration: 0.8, ease: 'power2.out' }, 3.2)
         .add(() => {
-          const target = document.querySelector<HTMLElement>('[data-hero-form] .tri__main');
+          const target = document.querySelector<HTMLElement>('[data-intro-target]');
           if (target) Flip.fit(form, target, { duration: 0.9, ease: 'power3.inOut', scale: true });
         }, 3.2)
         .to(el, { opacity: 0, duration: 0.5, ease: 'power1.in' }, 4.0);

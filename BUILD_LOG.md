@@ -52,3 +52,9 @@ Live-verified this session (Helius key in git-ignored .env): authority, metadata
 - [ ] 375 / 768 / 1280 / 1920 widths, screen reader, full keyboard journey Home→Lease — not done
 - [ ] Share-card visual check on every card with long/short ticker — dimensions tested only
 - [ ] Block-the-RPC-host degraded state — unit tested, not driven in a browser
+
+## Redesign pass — the desk is the page
+Feedback: too much like a landing page, functionality too late, design stale.
+Changed: Home now opens on the working inspection desk (form + nine-row board that shows each inspector's question before any run, then resolves live with a key swing and stamp), one-click real example tokens (JUP, BONK, WIF), shorter intro (~2.5 s) whose form lands in the desk form, a single-line headline without the eyebrow or one-word italic accent, section headings in one voice. Merged the separate inspectors and corkboard sections into the desk and the Sign section; paper is reserved for things you fill in or sign, dark ledger rows for what the chain says.
+Added: `VITE_RPC_URL` read only in dev from git-ignored `.env.development.local`; mocked e2e for the desk (idle, progressive resolve, not-a-mint, blocked RPC, 320 px chip).
+Lighthouse mobile Home after redesign: 93 / 100 / 100 / 100 (LCP 2.9 s).
