@@ -14,3 +14,9 @@ Done: `copy.ts` (full deck), `config.ts`, `<Show>` helper, unit test that empty 
 ## Stage 3 — Lease core
 Done: schema guard, canonical JSON, fingerprint, message, base64url, verify, memo codec, register validator. 100% line coverage on `src/lease/` and `src/chain/memo.ts`.
 Deviation: memo is `LEASE1:` + raw canonical JSON (not base64url) because base64 of the worst-case lease is >560 bytes. Raw JSON worst case fits (tested).
+
+## Stage 4 — Chain layer
+Done: RPC wrapper (fallback, backoff 200/400 ms, 60 s cache), DexScreener client, Helius client, PDA + Metaplex Borsh reader, nine inspectors, clause evaluation + state machine (`src/lease/evaluate.ts`), `npm run inspect -- <mint> [--neighbours]`. 44 unit tests; 100% coverage on lease/memo/evaluate.
+Live (this environment): public RPC `getAccountInfo`, DexScreener and Helius-less paths respond. Public RPC returns HTTP 429 for `getTokenLargestAccounts` (landlord/neighbours → UNVERIFIABLE) — a Helius key is needed for those.
+Fixtures: synthetic (shapes mirror real responses), defined inline in tests; not captured from live responses because the public RPC rate-limits the holder calls.
+Known gaps: LP rule for PumpSwap/Raydium is UNVERIFIABLE by design (no verified protocol-level burn guarantee).
