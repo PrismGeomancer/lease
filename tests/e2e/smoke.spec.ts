@@ -1,5 +1,10 @@
 import { test, expect } from '@playwright/test';
 
+// The intro has its own spec; everything else starts with it already seen.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => sessionStorage.setItem('lease:intro:seen', '1'));
+});
+
 const ROUTES: [string, RegExp][] = [
   ['#/', /on the lease/i],
   ['#/inspect', /inspection/i],

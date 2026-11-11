@@ -1,6 +1,6 @@
 import { render } from 'preact';
 import { lazy, Suspense } from 'preact/compat';
-import { useEffect } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { route } from './router';
 import { useSignal } from './signal';
 import { copy } from './copy';
@@ -12,6 +12,8 @@ import { Banners, ErrorBoundary, Footer, Nav } from './components/Shell';
 import Home from './pages/Home';
 import { InspectPage, KeyringPage, NotFoundPage, OfficePage, RegisterPage } from './pages/simple';
 import { trySilentReconnect } from './chain/wallet';
+import { Intro, introNeeded } from './anim/Intro';
+import { initLamp, initReveals } from './anim/reveals';
 
 const Draft = lazy(() => import('./pages/Draft'));
 const LeasePage = lazy(() => import('./pages/LeasePage'));
@@ -55,6 +57,14 @@ function Page() {
     return () => clearTimeout(t);
   }, [r]);
 
+  // Scroll reveals per route; reverted on route change.
+  useEffect(() => {
+    let cleanup: (() => void) | undefined;
+    let dead = false;
+    const t = setTimeout(() => { initReveals().then((c) => { if (dead) c(); else cleanup = c; }).catch(() => {}); }, 80);
+    return () => { dead = true; clearTimeout(t); cleanup?.(); };
+  }, [r]);
+
   const fallback = <main id="main" class="container page"><p class="mono">{copy.extra.loading}</p></main>;
   switch (r.name) {
     case 'home': return <main id="main"><Home /></main>;
@@ -71,10 +81,15 @@ function Page() {
 }
 
 function App() {
+  const [intro, setIntro] = useState(() => introNeeded() && route.get().name === 'home');
+  const lamp = useRef<HTMLDivElement>(null);
   useEffect(() => { void trySilentReconnect(); }, []);
+  useEffect(() => (lamp.current ? initLamp(lamp.current) : undefined), []);
   return (
     <ErrorBoundary>
       <SvgDefs />
+      <div class="lamp" ref={lamp} aria-hidden="true" />
+      {intro && <Intro onDone={() => setIntro(false)} />}
       <a class="skip-link" href="#main" onClick={(e) => { e.preventDefault(); const m = document.getElementById('main'); m?.setAttribute('tabindex', '-1'); m?.focus(); }}>{copy.extra.skipLink}</a>
       <Nav />
       <Banners />
@@ -84,5 +99,8 @@ function App() {
     </ErrorBoundary>
   );
 }
+
+// Test hook: lets e2e render share cards without driving the whole UI.
+(window as unknown as { __cards: () => Promise<unknown> }).__cards = () => import('./cards/canvas');
 
 render(<App />, document.getElementById('app')!);

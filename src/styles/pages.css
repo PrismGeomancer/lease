@@ -214,3 +214,24 @@ a.icard:hover, a.icard:focus-visible { transform: translateY(-18px); box-shadow:
 /* Decorative sheets/tilts may poke past the viewport; never let them create a horizontal scrollbar. */
 html { overflow-x: clip; }
 .tri { width: calc(100% - 14px); }
+
+/* ---------- Motion ---------- */
+.lamp { position: fixed; inset: 0; pointer-events: none; z-index: 0; --lamp-y: 0vh;
+  background: radial-gradient(ellipse 60% 50% at 20% calc(0% + var(--lamp-y)), rgba(226,195,138,.10), transparent 70%); animation: glow 8s ease-in-out infinite alternate; }
+@keyframes glow { from { opacity: .96; } to { opacity: 1; } }
+main, .footer, .nav { position: relative; z-index: 1; }
+.nav { position: sticky; }
+main#main { animation: pagein 320ms var(--ease-paper); }
+@keyframes pagein { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.intro { position: fixed; inset: 0; z-index: var(--z-intro); background: var(--carbon-deep); display: grid; place-items: center; overflow: hidden; }
+.intro__skip { position: absolute; top: var(--s-4); right: var(--s-4); }
+.intro__lamp { position: absolute; inset: 0; background: radial-gradient(circle at 50% 45%, rgba(226,195,138,.55), rgba(226,195,138,0) 55%); }
+.intro__form { position: relative; width: min(420px, 86vw); aspect-ratio: 4/3; background: var(--form-white) var(--paper-grain); color: var(--ink); padding: var(--s-5); box-shadow: var(--sh-lift); display: grid; align-content: start; font-size: .85rem; }
+.intro__caret { animation: blink 530ms steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.intro__key { position: absolute; right: 24px; bottom: 36px; }
+.intro__stamp { position: absolute; left: 24px; bottom: 36px; font: 400 1.6rem var(--font-display); color: var(--stamp-red); border: 3px double var(--stamp-red); padding: .2em .5em; transform: rotate(-8deg); }
+.intro__loader { position: absolute; left: var(--s-4); bottom: var(--s-4); font-size: 12px; color: var(--slate-grey); margin: 0; }
+@media (prefers-reduced-motion: reduce) { .lamp, main#main, .intro__caret { animation: none; } }
+.intro__lamp, .intro__form { pointer-events: none; }
+.intro__skip { z-index: 2; }

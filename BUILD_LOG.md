@@ -24,3 +24,11 @@ Known gaps: LP rule for PumpSwap/Raydium is UNVERIFIABLE by design (no verified 
 ## Stage 5-6 — Home and pages
 Done: app shell (nav, drawer, footer, banners, error boundary), all 12 home sections with real copy, Inspect/Draft/Lease/Register/Hearing/Keyring/Office/404, wallet modal (Wallet Standard), record-on-chain flow, register reader, hearing evidence. e2e: every route renders, 320px has no horizontal overflow, empty states are honest.
 Missing/unverified: signing with a real wallet, recording on devnet (needs a funded devnet wallet and OFFICE_ADDRESS) — not testable from this environment.
+
+## Stage 7 — Motion
+Done: intro (GSAP timeline + Flip, once per session, Skip/Esc/click, reduced-motion fade), hero hold-to-sign with signature draw, scroll reveals (ScrollTrigger, once), pins, flip card, elevator doors, key swing, bulletin marquee (CSS), lamp parallax, page-in transition, toasts. GSAP is a lazy chunk (≈55 KB gz); initial JS ≈32 KB gz.
+Deviations: bulletin marquee is CSS (not GSAP) to save bytes; outgoing page fade omitted (incoming only).
+Missing: stamp 2 px screen nudge on result stamps; the intro was not measured on a low-end device.
+
+## Stage 8 — Cards and keyring
+Done: five canvas cards (report, lease, renewed, eviction, hearing) at 1200×630, layout helpers unit-tested for long tickers; keyring export/import/clear e2e. Card dimensions verified by Playwright; visual quality only spot-checked.
