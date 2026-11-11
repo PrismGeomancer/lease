@@ -34,6 +34,12 @@ describe('rpc wrapper', () => {
     const limited = (async () => (++r < 2 ? new Response(JSON.stringify({ error: { code: -32005, message: 'busy' } })) : ok(1))) as unknown as typeof fetch;
     expect(await createRpc({ urls: ['https://a'], fetchImpl: limited, sleep: noSleep }).call('x')).toBe(1);
   });
+  it('retries "service overloaded, try again" errors', async () => {
+    let n = 0;
+    const f = (async () => (++n < 3 ? new Response(JSON.stringify({ error: { code: -32000, message: 'account index service overloaded, please try again.' } })) : ok(7))) as unknown as typeof fetch;
+    expect(await createRpc({ urls: ['https://a'], fetchImpl: f, sleep: noSleep }).call('x')).toBe(7);
+    expect(n).toBe(3);
+  });
   it('throws when everything fails and when no endpoint exists; exposes das flag', async () => {
     const dead = (async () => status(503)) as unknown as typeof fetch;
     await expect(createRpc({ urls: ['https://a'], fetchImpl: dead, sleep: noSleep }).call('x')).rejects.toThrow('HTTP 503');

@@ -42,7 +42,7 @@ export function createRpc(opts: RpcOptions): Rpc {
     if (!res.ok) throw Object.assign(new RpcError(`HTTP ${res.status}`, res.status), { retry: RETRYABLE.has(res.status) });
     const json = (await res.json()) as { result?: T; error?: { code: number; message: string } };
     if (json.error) {
-      throw Object.assign(new RpcError(json.error.message, json.error.code), { retry: json.error.code === -32005 });
+      throw Object.assign(new RpcError(json.error.message, json.error.code), { retry: json.error.code === -32005 || /overloaded|try again/i.test(json.error.message) });
     }
     return json.result as T;
   }

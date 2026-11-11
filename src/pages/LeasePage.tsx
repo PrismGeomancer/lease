@@ -124,17 +124,25 @@ function Valid({ lease, history, fp }: { lease: Lease; history: LeaseHistory | n
   return (
     <main id="main" class="container page leasepage" tabIndex={-1}>
       <div class="leasepage__top">
-        <h1>{copy.lease.header.split(' · ')[1]}</h1>
-        <Stamp status={state} size="xl" animate />
-        <p class="mono leasepage__ticker"><TokenImage src={meta?.image} size={40} /> <strong>{ticker}</strong> {meta?.name && <span>{clean(meta.name, 40)}</span>}</p>
+        <div class="leasepage__head">
+          <h1>{copy.lease.header.split(' · ')[1]}</h1>
+          <Stamp status={state} size="lg" animate />
+        </div>
+        <p class="leasepage__ticker">
+          <TokenImage src={meta?.image} size={40} />
+          <strong>{ticker}</strong>
+          {meta?.name && meta.name !== meta.symbol && <span>{clean(meta.name, 40)}</span>}
+        </p>
         <div class="leasepage__progress">
           <PunchCard days={lease.term} elapsed={state === 'RENEWED' ? lease.term : day} breachDay={state === 'EVICTED' && history?.stateAt ? dayOf(start, history.stateAt, lease.term) : undefined} />
           <p class="mono">{copy.lease.day(state === 'RENEWED' ? lease.term : day, lease.term)}</p>
         </div>
       </div>
 
-      {state === 'EVICTED' && <Notice kind="evicted" ticker={ticker} clause={clauseLabel} date={fmtDate(history?.stateAt ?? nowSec)} />}
-      {state === 'RENEWED' && <Notice kind="renewed" ticker={ticker} date={fmtDate(history?.stateAt ?? nowSec)} />}
+      <div class="leasepage__notice">
+        {state === 'EVICTED' && <Notice kind="evicted" ticker={ticker} clause={clauseLabel} date={fmtDate(history?.stateAt ?? nowSec)} />}
+        {state === 'RENEWED' && <Notice kind="renewed" ticker={ticker} date={fmtDate(history?.stateAt ?? nowSec)} />}
+      </div>
 
       <div class="leasepage__grid">
         <TriplicateForm formNo="FORM L-01 / REV. 3" title={copy.lease.header} max={720}>
@@ -174,7 +182,6 @@ function Valid({ lease, history, fp }: { lease: Lease; history: LeaseHistory | n
                 : <div><Button size="sm" onPaper onClick={() => setWalletOpen(true)} disabled={!!w}>{copy.lease.record}</Button><p class="mono">{copy.lease.wrongWallet(shorten(lease.dev))}</p></div>}
             </Show>
           </section>
-          {!history && <p class="mono">Live check only, no history.</p>}
         </aside>
       </div>
 

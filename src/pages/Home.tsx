@@ -172,7 +172,7 @@ function Building({ token, own }: { token: TokenFacts | null; own: Lease | null 
         {live ? (
           <InspectionBoard findings={insp.state.findings} running={insp.state.running} started />
         ) : (
-          <TriplicateForm formNo="FORM L-01 · $LEASE" title="$LEASE lease agreement" max={640}>
+          <TriplicateForm formNo="FORM L-01 · $LEASE" title="Lease agreement" max={640}>
             <Stamp status="PENDING" size="lg" text={copy.building.pending} />
             <p>{copy.building.preLaunch}</p>
           </TriplicateForm>

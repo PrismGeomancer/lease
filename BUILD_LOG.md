@@ -58,3 +58,9 @@ Feedback: too much like a landing page, functionality too late, design stale.
 Changed: Home now opens on the working inspection desk (form + nine-row board that shows each inspector's question before any run, then resolves live with a key swing and stamp), one-click real example tokens (JUP, BONK, WIF), shorter intro (~2.5 s) whose form lands in the desk form, a single-line headline without the eyebrow or one-word italic accent, section headings in one voice. Merged the separate inspectors and corkboard sections into the desk and the Sign section; paper is reserved for things you fill in or sign, dark ledger rows for what the chain says.
 Added: `VITE_RPC_URL` read only in dev from git-ignored `.env.development.local`; mocked e2e for the desk (idle, progressive resolve, not-a-mint, blocked RPC, 320 px chip).
 Lighthouse mobile Home after redesign: 93 / 100 / 100 / 100 (LCP 2.9 s).
+
+## Polish pass — every route audited at 1280 and 390 px
+Method: full-page screenshots of Home, Inspect, Draft, Lease (live-inspected test lease on BONK), Hearing, Register, Keyring, Office, 404.
+Fixed: footer (balanced brand / nav / legal rows, no empty column), programmatic focus box on headings, mixed-case h1s, lease header (stamp overlap, duplicate ticker name, giant punch cells, stretched form sheets), unreadable brass links on paper and on dark tables, chips wrapping, hearing page showing "?%" (now says evidence is unavailable; and the RPC now retries "service overloaded" errors), register counting samples as leases, doubled Draft step numbers, clipped long stamps on mobile, section headings that could stay hidden if a scroll event was skipped (reveals now also fire when jumped past, with a 6 s safety net).
+Added: live "Your lease so far" summary beside the Draft form.
+Not re-checked after this pass: Keyring and 404 at desktop width, the Draft pages for steps 2-4 (wallet needed), the intro on a slow device.

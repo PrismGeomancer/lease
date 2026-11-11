@@ -127,6 +127,7 @@ export function RegisterPage() {
 
   const real = entries ?? [];
   const source = entries !== null && real.length === 0 ? SAMPLES : real;
+  const usingSamples = entries !== null && real.length === 0;
   const needle = q.trim().toLowerCase();
   const rows = source
     .filter((e) => filter === 'all' || e.state.toLowerCase() === filter)
@@ -159,7 +160,7 @@ export function RegisterPage() {
           <option value="new">{copy.register.sortNewest}</option><option value="end">{copy.register.sortEnding}</option>
         </select>
       </div>
-      <p class="mono" aria-live="polite">{entries === null ? copy.extra.loading : `${rows.length} ${rows.length === 1 ? 'lease' : 'leases'}`}{dev ? ` · tenant ${dev.slice(0, 4)}…` : ''}</p>
+      <p class="mono" aria-live="polite">{entries === null ? copy.extra.loading : usingSamples ? 'Nothing on file yet.' : `${rows.length} ${rows.length === 1 ? 'lease' : 'leases'}`}{dev ? ` · tenant ${dev.slice(0, 4)}…` : ''}</p>
       {entries !== null && real.length === 0 && <p class="mono">{copy.register.empty}</p>}
       {rejected > 0 && <p class="mono">{copy.register.rejected(rejected)}</p>}
       {rows.length === 0 && entries !== null ? (

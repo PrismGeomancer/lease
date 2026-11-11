@@ -16,7 +16,7 @@ export function PunchCard({ days, elapsed, breachDay, compact }: PunchCardProps)
   return (
     <div
       class={`punch${compact ? ' punch--compact' : ''}`}
-      style={{ '--cols': Math.min(days, 15) } as Record<string, number>}
+      style={{ '--cols': compact ? 10 : Math.min(days, 30) } as Record<string, number>}
       role="img"
       aria-label={`Day ${Math.min(elapsed, days)} of ${days}${breachDay ? `, breach on day ${breachDay}` : ''}`}
     >

@@ -90,28 +90,37 @@ export function Nav() {
 export function Footer() {
   const [office, setOffice] = useState<Office | null>(null);
   useEffect(() => { loadOffice().then(setOffice); }, []);
+  const hasLinks = !!(CONFIG.TOKEN_CA || CONFIG.X_URL || CONFIG.TELEGRAM_URL || CONFIG.GITHUB_URL);
   return (
     <footer class="footer">
-      <div class="container footer__grid">
-        <div>
-          <a class="nav__logo" href="#/"><KeyGlyph size={32} /><span>LEASE</span></a>
-          <p>{copy.footer.line}</p>
-          {office?.lastRoundAt && <p class="mono">{copy.footer.lastRound(new Date(office.lastRoundAt).toUTCString())}</p>}
+      <div class="container">
+        <div class="footer__top">
+          <div class="footer__brand">
+            <a class="nav__logo" href="#/"><KeyGlyph size={32} /><span>LEASE</span></a>
+            <p>{copy.footer.line}</p>
+          </div>
+          <nav class="footer__nav" aria-label="Footer">
+            {LINKS.map(([href, label]) => <a key={href} href={href}>{label}</a>)}
+          </nav>
+          {hasLinks && (
+            <div class="footer__links">
+              <Show if={CONFIG.TOKEN_CA}><AddressChip address={CONFIG.TOKEN_CA} label="Contract address" link={`${CONFIG.EXPLORER_ACCOUNT}${CONFIG.TOKEN_CA}`} /></Show>
+              <p>
+                <Show if={CONFIG.X_URL}><ExternalLink href={CONFIG.X_URL}>X</ExternalLink> </Show>
+                <Show if={CONFIG.TELEGRAM_URL}><ExternalLink href={CONFIG.TELEGRAM_URL}>Telegram</ExternalLink> </Show>
+                <Show if={CONFIG.GITHUB_URL}><ExternalLink href={CONFIG.GITHUB_URL}>GitHub</ExternalLink></Show>
+              </p>
+            </div>
+          )}
         </div>
-        <nav aria-label="Footer">
-          {LINKS.map(([href, label]) => <a key={href} href={href}>{label}</a>)}
-        </nav>
-        <div>
-          <Show if={CONFIG.TOKEN_CA}><AddressChip address={CONFIG.TOKEN_CA} label="Contract address" link={`${CONFIG.EXPLORER_ACCOUNT}${CONFIG.TOKEN_CA}`} /></Show>
-          <p>
-            <Show if={CONFIG.X_URL}><ExternalLink href={CONFIG.X_URL}>X</ExternalLink> </Show>
-            <Show if={CONFIG.TELEGRAM_URL}><ExternalLink href={CONFIG.TELEGRAM_URL}>Telegram</ExternalLink> </Show>
-            <Show if={CONFIG.GITHUB_URL}><ExternalLink href={CONFIG.GITHUB_URL}>GitHub</ExternalLink></Show>
+        <div class="footer__legal">
+          <p class="footer__risk">{copy.footer.risk}</p>
+          <p class="footer__meta">
+            {copy.footer.copy}
+            {office?.lastRoundAt && <> · {copy.footer.lastRound(new Date(office.lastRoundAt).toUTCString())}</>}
           </p>
         </div>
       </div>
-      <p class="container footer__risk">{copy.footer.risk}</p>
-      <p class="container footer__risk">{copy.footer.copy}</p>
     </footer>
   );
 }

@@ -11,14 +11,14 @@ import { useSignal } from '../signal';
 import { walletState, walletEvents, signMessage, WalletError } from '../chain/wallet';
 import { getParsedMint, getOwnerBalance } from '../chain/rpc';
 import { getRpc, makeCtx } from '../lib/chainctx';
-import { isAddress, TERMS, type Clauses, type Lease, type LeaseBody, type Term } from '../lease/schema';
-import { buildMessage } from '../lease/message';
+import { CLAUSE_ORDER, isAddress, TERMS, type Clauses, type Lease, type LeaseBody, type Term } from '../lease/schema';
+import { buildMessage, clauseLine } from '../lease/message';
 import { encodeLease } from '../lease/encode';
 import { verifyLease } from '../lease/verify';
 import { clauseStatuses } from '../lease/evaluate';
 import { inspectAll } from '../inspectors';
 import { toast } from '../lib/toast';
-import { clean } from '../lib/util';
+import { clean, shorten } from '../lib/util';
 import { pctOf } from '../inspectors/common';
 import { CLAUSE_SHORT } from '../hearing/templates';
 
@@ -172,7 +172,7 @@ export default function DraftPage() {
         <ol class="stepper" aria-label="Steps">
           {labels.map((l, i) => (
             <li key={l} aria-current={d.step === i ? 'step' : undefined} class={d.step === i ? 'is-current' : i < d.step ? 'is-done' : ''}>
-              <span class="mono">L-01/{i + 1}</span> <span class="stepper__label">{l}</span>
+              <span class="mono">L-01/{i + 1}</span> <span class="stepper__label">{l.slice(2)}</span>
             </li>
           ))}
         </ol>
@@ -241,6 +241,30 @@ export default function DraftPage() {
             {d.step < 3 && reason[d.step] && <p class="mono draft__reason" aria-live="polite">{reason[d.step]}</p>}
           </TriplicateForm>
         </div>
+        <aside class="paper draftsum" aria-label="Your lease so far">
+          <h2>Your lease so far</h2>
+          <dl>
+            <dt>Coin</dt>
+            <dd>{preview ? `${clean(preview.symbol ?? preview.name ?? 'Unnamed token', 24)} ${shorten(d.mint.trim(), 4)}` : <span class="draftsum__todo">Not chosen yet</span>}</dd>
+            <dt>Tenant</dt>
+            <dd>{w ? shorten(w.address, 4) : <span class="draftsum__todo">Not connected</span>}{holdPct !== null && ` · holds ${holdPct}%`}</dd>
+            <dt>Term</dt>
+            <dd>{d.term} days</dd>
+          </dl>
+          <p class="label">Clauses</p>
+          {CLAUSE_ORDER.some((k) => clauses[k] !== undefined) ? (
+            <ul>
+              {CLAUSE_ORDER.map((k) => {
+                const line = body ? clauseLine(body, k) : clauseLine({ v: 1, mint: '', dev: '', t0, term: d.term, b0: '0', c: clauses }, k);
+                return line ? <li key={k}>{line.replace(/^- /, '')}</li> : null;
+              })}
+            </ul>
+          ) : (
+            <p class="draftsum__todo">None chosen yet.</p>
+          )}
+          {d.note.trim() && <p class="draftsum__note">“{clean(d.note, 140)}”</p>}
+          <p class="draftsum__fine">A signature moves no funds. Nothing is public until you share or record the lease.</p>
+        </aside>
       </div>
       <WalletModal open={walletOpen} onClose={() => setWalletOpen(false)} />
     </main>

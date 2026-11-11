@@ -26,7 +26,12 @@ export async function initReveals(root: ParentNode = document): Promise<() => vo
       if (isHero && waitIntro) {
         document.addEventListener('lease:intro-done', () => tl.play(), { once: true });
       } else {
-        ScrollTrigger.create({ trigger: h, start: 'top 80%', once: true, onEnter: () => tl.play() });
+        // Reveal on enter, and also if the user jumps past it or it is already above the fold:
+        // content must never stay hidden because a scroll event was skipped.
+        ScrollTrigger.create({
+          trigger: h, start: 'top 85%', once: true,
+          onEnter: () => tl.play(), onLeave: () => tl.progress(1), onRefresh: (self) => { if (self.progress > 0) tl.progress(1); },
+        });
       }
     });
     const cards = Array.from(root.querySelectorAll<HTMLElement>('[data-reveal="card"]'));
@@ -35,13 +40,18 @@ export async function initReveals(root: ParentNode = document): Promise<() => vo
       gsap.set(c, { opacity: 0, y: 40, rotation: i % 2 ? 2 : -2 });
       if (pin) gsap.set(pin, { scale: 0 });
       ScrollTrigger.create({
-        trigger: c, start: 'top 85%', once: true,
+        trigger: c, start: 'top 90%', once: true,
+        onLeave: () => { gsap.set(c, { opacity: 1, y: 0, rotation: seeded(i) }); if (pin) gsap.set(pin, { scale: 1 }); },
         onEnter: () => {
           gsap.to(c, { opacity: 1, y: 0, rotation: seeded(i), duration: 0.6, ease: 'power3.out', delay: (i % 4) * 0.09 });
           if (pin) gsap.to(pin, { scale: 1, duration: 0.25, ease: 'back.out(3)', delay: (i % 4) * 0.09 });
         },
       });
     });
+    // Safety net: whatever is still hidden a few seconds in is shown (a skipped scroll event must not hide content).
+    gsap.delayedCall(6, () => root.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el) => {
+      if (getComputedStyle(el).opacity === '0') gsap.to(el, { opacity: 1, y: 0, yPercent: 0, clipPath: 'inset(0 0 0% 0)', duration: 0.3 });
+    }));
   }, root as Element);
   return () => ctx.revert();
 }

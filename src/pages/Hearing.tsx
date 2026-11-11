@@ -63,7 +63,21 @@ export default function HearingPage({ fingerprint: param, clause }: { fingerprin
   if (kind === 'authority') vals.which = f('mint')?.status === 'BREACHED' ? 'mint' : 'freeze';
   if (kind === 'neighbours') vals.n = ((ev('neighbours').groups as { wallets: string[] }[] | undefined)?.[0]?.wallets.length) ?? '?';
   if (kind === 'noise') { const e = ev('noise'); vals.ratio = e.buys ? Math.round(((e.sells as number) / (e.buys as number)) * 100) / 100 : '?'; }
-  const r = reading(kind, vals);
+  const num = (v: unknown) => typeof v === 'number';
+  const known =
+    kind === 'sold' ? !!sales && sales.length > 0
+    : kind === 'devmax' ? num(vals.pct)
+    : kind === 'top10' ? num(vals.pct)
+    : kind === 'liquidity' ? num(ev('foundations').liquidityUsd)
+    : kind === 'authority' ? f('mint')?.status === 'BREACHED' || f('freeze')?.status === 'BREACHED'
+    : kind === 'neighbours' ? num(vals.n)
+    : kind === 'noise' ? num(vals.ratio)
+    : true;
+  const loaded = findings !== null && (kind !== 'sold' || sales !== null);
+  const base = reading(kind, vals);
+  const r = known
+    ? base
+    : { innocent: base.innocent, guilty: loaded ? "The evidence couldn't be read just now, so there is no guilty reading to show. Try again in a minute." : 'Reading the chain…' };
 
   const stamp = (v: Verdict) => { setVerdict(v); storageSet(vKey(fp, clause), v); };
   const cap = <T,>(a: T[]) => (all ? a : a.slice(0, 20));
@@ -85,6 +99,7 @@ export default function HearingPage({ fingerprint: param, clause }: { fingerprin
       <section class="evidence-wrap">
         <h2>Evidence</h2>
         {!findings && <p class="mono">{copy.extra.loading}</p>}
+        {loaded && !known && <p class="mono">No evidence to show for this clause right now.</p>}
         {kind === 'sold' && (sales === null ? <p class="mono">Reading the dev wallet's transactions…</p> : sales.length === 0 ? <p class="mono">No dev outflows found since the lease start.</p> : (
           <table class="itable"><thead><tr><th scope="col">When</th><th scope="col">Amount (% of supply)</th><th scope="col">Where</th><th scope="col">Tx</th></tr></thead>
             <tbody>{cap(sales).map((s) => <tr key={s.signature}><td class="mono">{s.t ? fmtDate(s.t) : '—'}</td><td class="mono">{s.pct}%</td><td>{s.label}{s.kind === 'unknown' ? '' : s.kind === 'another wallet' ? ' (exchange-like address, unverified)' : ''}</td><td><ExternalLink href={`${CONFIG.EXPLORER_TX}${s.signature}`}>{shorten(s.signature, 6)}</ExternalLink></td></tr>)}</tbody></table>
@@ -109,7 +124,7 @@ export default function HearingPage({ fingerprint: param, clause }: { fingerprin
         <p class="mono">{copy.hearing.note}</p>
         <Button variant="secondary" onClick={() => downloadCard({ kind: 'hearing', ticker: shorten(lease.mint, 4), innocent: r.innocent, guilty: r.guilty, verdict, fp: shortFingerprint(fp) }, `hearing-${fp.slice(0, 8)}.png`)}>{copy.hearing.download}</Button>
       </section>
-      <p><a href={`#/l/${param}`}>← Back to the lease</a></p>
+      <p class="hearing__back"><a href={`#/l/${param}`}>Back to the lease</a></p>
     </main>
   );
 }
