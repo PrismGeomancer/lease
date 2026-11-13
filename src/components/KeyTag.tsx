@@ -1,6 +1,6 @@
 import { useState } from 'preact/hooks';
 import type { Status } from '../status';
-import { KeyGlyph } from './Icons';
+import { Logo } from './Icons';
 import { Stamp } from './Stamp';
 
 export interface KeyTagProps {
@@ -26,7 +26,7 @@ export function KeyTag({ index, name, checks, joke, status = 'PENDING', source, 
           if (!open) onOpen?.();
         }}
       >
-        <span class="keytag__key"><KeyGlyph size={56} /></span>
+        <span class="keytag__key"><Logo size={56} /></span>
         <span class="keytag__tag paper">
           <span class="keytag__no">{index}</span> {name}
           <br />

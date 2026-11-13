@@ -10,6 +10,11 @@ export const ICON_OUT = 'M7 17L17 7M8 7h9v9';
 export const ICON_X = 'M4 4l16 16M20 4L4 20';
 
 /** The logo key as inline SVG (brass key with red seal). */
+/** The brand logo (public/logo.png). KeyGlyph stays for status-coloured keys. */
+export function Logo({ size = 32 }: { size?: number }) {
+  return <img src={`${import.meta.env.BASE_URL}logo.png`} width={size} height={size} alt="" aria-hidden="true" decoding="async" style={{ display: 'block', objectFit: 'contain' }} />;
+}
+
 export function KeyGlyph({ size = 56, color = 'var(--brass)' }: { size?: number; color?: string }) {
   return (
     <svg viewBox="60 120 400 260" width={size} height={size} aria-hidden="true" focusable="false">

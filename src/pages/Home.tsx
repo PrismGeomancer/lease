@@ -10,7 +10,7 @@ import { Accordion, CopyButton, ExternalLink } from '../components/misc';
 import { InspectionDesk } from '../components/InspectionDesk';
 import { InspectionBoard } from '../components/InspectionBoard';
 import { IndexCard } from '../components/LeaseParts';
-import { KeyGlyph } from '../components/Icons';
+import { Logo } from '../components/Icons';
 import { KpiRow } from '../components/Dashboard';
 import { useHold } from '../lib/useHold';
 import { prefersReducedMotion } from '../lib/util';
@@ -49,6 +49,7 @@ function BulletinStrip({ data }: { data: Bulletin | null }) {
   }));
   return (
     <section id="bulletin" class="bulletin" aria-label={copy.bulletin.label}>
+      <div class="bulletin__in container">
       <span class="bulletin__label">{copy.bulletin.label}</span>
       {text.length === 0 ? (
         <p class="bulletin__empty">{copy.bulletin.empty}</p>
@@ -57,13 +58,14 @@ function BulletinStrip({ data }: { data: Bulletin | null }) {
           <div class={`bulletin__track${paused || prefersReducedMotion() ? ' is-paused' : ''}`} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusIn={() => setPaused(true)} onFocusOut={() => setPaused(false)}>
             {[0, 1].map((dup) => (
               <ul key={dup} aria-hidden={dup === 1}>
-                {text.map((i) => <li key={i.key}><KeyGlyph size={14} /> <a href={i.href} tabIndex={dup === 1 ? -1 : 0}>{i.label}</a></li>)}
+                {text.map((i) => <li key={i.key}><Logo size={16} /> <a href={i.href} tabIndex={dup === 1 ? -1 : 0}>{i.label}</a></li>)}
               </ul>
             ))}
           </div>
           <button class="btn btn--ghost btn--sm" onClick={() => setPaused(!paused)}>{paused ? copy.bulletin.resume : copy.bulletin.pause}</button>
         </>
       )}
+      </div>
     </section>
   );
 }

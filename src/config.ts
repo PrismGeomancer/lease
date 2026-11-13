@@ -5,7 +5,7 @@ export const CONFIG = {
   // Lease Office pubkey; empty => "Record on-chain" hidden, register reads samples only. `npm run dev` may read
   // VITE_OFFICE_ADDRESS from .env.development.local for devnet testing.
   OFFICE_ADDRESS: ((import.meta as { env?: Record<string, string | undefined> }).env?.VITE_OFFICE_ADDRESS ?? '') as string,
-  X_URL: '',
+  X_URL: 'https://x.com/lease_pad',
   TELEGRAM_URL: '',
   GITHUB_URL: '',
   BUY_URL: '', // label is "View market", a different label on purpose

@@ -42,14 +42,15 @@ function background(g: G) {
   for (let i = 0; i < 1800; i++) g.fillRect((i * 7919) % CARD_W, (i * 104729) % CARD_H, 1.5, 1.5);
 }
 
+let logoImg: HTMLImageElement | null = null;
+async function loadLogo() {
+  if (logoImg) return;
+  const img = new Image(); img.src = `${import.meta.env.BASE_URL}logo.png`;
+  try { await img.decode(); logoImg = img; } catch { /* card still renders without it */ }
+}
+
 function logo(g: G) {
-  g.save(); g.translate(40, 34); g.scale(0.11, 0.11); g.translate(-60, -120);
-  g.fillStyle = C.brass;
-  const ring = new Path2D('M168 140a116 116 0 1 1 0 232a116 116 0 1 1 0-232zm0 64a52 52 0 1 0 0 104a52 52 0 1 0 0-104z');
-  g.fill(ring, 'evenodd');
-  g.beginPath(); g.roundRect(262, 226, 186, 60, 14); g.roundRect(388, 262, 60, 110, 14); g.roundRect(320, 262, 44, 76, 12); g.fill();
-  g.fillStyle = C.red; g.beginPath(); g.arc(168, 256, 20, 0, Math.PI * 2); g.fill();
-  g.restore();
+  if (logoImg) g.drawImage(logoImg, 36, 22, 52, 52);
   g.fillStyle = C.white; g.font = `28px ${FONT.display}`; g.textBaseline = 'alphabetic';
   g.fillText('LEASE', 96, 68);
 }
@@ -57,6 +58,7 @@ function logo(g: G) {
 function footer(g: G, fp?: string) {
   g.fillStyle = C.slate; g.font = `20px ${FONT.data}`;
   const host = `${location.origin}${location.pathname}`.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  if (/^localhost|^127\./.test(host)) { if (fp) { g.font = `20px ${FONT.data}`; g.textAlign = 'right'; g.fillText(fp, CARD_W - 40, CARD_H - 30); g.textAlign = 'left'; } return; }
   const m = measurer(g, FONT.data);
   const size = fitSize(m, host, 620, 20, 12);
   g.font = `${size}px ${FONT.data}`; g.textAlign = 'left'; g.fillText(host, 40, CARD_H - 30);
@@ -117,8 +119,9 @@ function drawReport(g: G, d: Extract<CardData, { kind: 'report' }>) {
   const k = count('KEPT');
   stamp(g, `${k} KEPT`, 950, 300, C.green, 78, -0.1, 400);
   g.fillStyle = C.slate; g.font = `22px ${FONT.data}`;
-  g.fillText(`${count('WATCH')} WATCH · ${count('BREACHED')} BREACHED · ${count('UNVERIFIABLE')} UNVERIFIABLE`.slice(0, 44), 790, 400);
-  g.fillText(d.date, 790, 440);
+  g.fillText(`${count('WATCH')} WATCH · ${count('BREACHED')} BREACHED`, 790, 400);
+  g.fillText(`${count('UNVERIFIABLE')} UNVERIFIABLE`, 790, 432);
+  g.fillText(d.date, 790, 472);
   if (d.demo) stamp(g, 'DEMO', 950, 150, C.slate, 36, 0.1);
 }
 
@@ -166,7 +169,7 @@ function drawHearing(g: G, d: Extract<CardData, { kind: 'hearing' }>) {
 }
 
 export async function renderCard(d: CardData): Promise<Blob> {
-  await loadFonts();
+  await Promise.all([loadFonts(), loadLogo()]);
   const canvas = document.createElement('canvas');
   canvas.width = CARD_W; canvas.height = CARD_H;
   const g = canvas.getContext('2d')!;

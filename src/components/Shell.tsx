@@ -7,7 +7,7 @@ import { route } from '../router';
 import { useSignal } from '../signal';
 import { Button } from './Button';
 import { Show } from './Show';
-import { KeyGlyph } from './Icons';
+import { Logo } from './Icons';
 import { AddressChip, ExternalLink, Modal } from './misc';
 import { WalletModal } from './WalletModal';
 import { walletState, disconnectWallet } from '../chain/wallet';
@@ -65,7 +65,7 @@ export function Nav() {
   return (
     <header class={`nav${scrolled || r.name !== 'home' ? ' nav--solid' : ''}`}>
       <div class="nav__in container">
-        <a class="nav__logo" href="#/" aria-label="LEASE home"><KeyGlyph size={32} /><span>LEASE</span></a>
+        <a class="nav__logo" href="#/" aria-label="LEASE home"><Logo size={34} /><span>LEASE</span></a>
         <nav class="nav__links" aria-label="Main">
           {LINKS.map(([href, label, name]) => <a key={href} href={href} aria-current={r.name === name ? 'page' : undefined}>{label}</a>)}
         </nav>
@@ -96,7 +96,7 @@ export function Footer() {
       <div class="container">
         <div class="footer__top">
           <div class="footer__brand">
-            <a class="nav__logo" href="#/"><KeyGlyph size={32} /><span>LEASE</span></a>
+            <a class="nav__logo" href="#/"><Logo size={34} /><span>LEASE</span></a>
             <p>{copy.footer.line}</p>
           </div>
           <nav class="footer__nav" aria-label="Footer">

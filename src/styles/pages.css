@@ -289,7 +289,9 @@ main#main { animation: pagein 320ms var(--ease-paper); }
 
 /* bulletin strip + floor + sign */
 .floor__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: var(--s-4); }
-.bulletin { margin-top: var(--s-7); }
+.bulletin { margin-top: var(--s-7); padding-inline: 0; display: block; }
+.bulletin__in { display: flex; align-items: center; gap: var(--s-4); min-height: 44px; }
+.bulletin__empty { text-transform: none; letter-spacing: 0; font-size: 13px; }
 .steps4 { padding-left: 1.2em; display: grid; gap: var(--s-2); margin-bottom: var(--s-5); max-width: 56ch; font-size: .95rem; }
 .steps4 strong { color: var(--brass-hi); }
 .demo__terms { padding-left: 1.2em; font-size: .9rem; margin: 0 0 var(--s-3); }

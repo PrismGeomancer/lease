@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { copy } from '../copy';
 import { prefersReducedMotion } from '../lib/util';
-import { KeyGlyph } from '../components/Icons';
+import { Logo } from '../components/Icons';
 
 const SEEN = 'lease:intro:seen';
 
@@ -108,7 +108,7 @@ export function Intro({ onDone }: { onDone: () => void }) {
       <div class="intro__lamp" aria-hidden="true" />
       <div class="intro__form" aria-hidden="true">
         <span class="mono">{typed}<span class="intro__caret">▍</span></span>
-        <span class="intro__key"><KeyGlyph size={72} /></span>
+        <span class="intro__key"><Logo size={80} /></span>
         <span class="intro__stamp">{copy.intro.stamp}</span>
       </div>
       <p class="intro__loader mono" aria-live="off">{copy.intro.loader(count)}</p>
